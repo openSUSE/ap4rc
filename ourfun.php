@@ -55,11 +55,30 @@ class ourfun extends rcube_plugin
             $this->register_action('plugin.ourfun-save', array($this, 'settings_save'));
         }
         else {
-            // TODO: register handler here to show the warning about passwords that will expire soon
-            // $this->api->output->show_message("MFA is enforced you need to have at least one 2nd factor configured. Current number of configured MFA tokens: " . $factors_count, 'error');
-
+            if (has_passwords_expiring_soon()) {
+                // TODO: implement gettext
+                $this->api->output->show_message("Some of your application passwords will expire soon.");
+            }
        }
        return $args;
+    }
+
+
+    private function has_passwords_expiring_soon() {
+        $rcmail = rcmail::get_instance();
+        $db       = $rcmail->get_dbh();
+        $db_table = $db->table_name('application_passwords', true);
+        $result = $db->query( "
+          SELECT
+              COUNT(*) > 0
+            FROM $db_table
+            WHERE
+              `username` = ? AND
+              (`created` >= NOW() - INTERVAL $this->soon_expire_interval)
+",
+        $rcmail->get_user_name());
+        $record = $db->fetch_assoc($result);
+        return ($record['soon_expired_count']);
     }
 
     public function settings_list($attrib = array())
