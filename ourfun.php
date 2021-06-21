@@ -79,7 +79,7 @@ class ourfun extends rcube_plugin
               (`created` >= NOW() -INTERVAL $expire_interval) AS `expired`
             FROM $db_table
             WHERE
-              `username` = 'jdsn'
+              `username` = ?
             ORDER BY
               `created`
 ",
