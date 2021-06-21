@@ -1,3 +1,4 @@
+<?php
 /**
  * Application Passwords handling for roundcube
  *
@@ -23,7 +24,6 @@
  * @licend
  */
 
-<?php
 class ourfun extends rcube_plugin
 {
     # public $task = '(login|settings)';
