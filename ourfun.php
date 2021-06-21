@@ -98,7 +98,6 @@ class ourfun extends rcube_plugin
                     'method' => 'post',
                     'action' => '#',
                     'id'     => 'ourfun-prop-' . $method,
-                    'style'  => 'display:none',
                     'class'  => 'propform',
                 ),
                 $fieldset
