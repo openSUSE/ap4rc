@@ -90,7 +90,7 @@ class ourfun extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
         // TODO: feed the passwords in
-        $application_passwords = array('application' => "Hello world", 'created' => "2021-06-01");
+        $application_passwords = array("hello world" => array('name' => "Hello world", 'created' => "2021-06-01", 'active'=>true));
         $this->api->output->set_env('application_passwords', !empty($application_passwords) ? $application_passwords : null);
 
         return html::div(array('id' => 'ourfunpropform'), "Here shall be form");
