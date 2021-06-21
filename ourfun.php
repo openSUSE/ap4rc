@@ -58,6 +58,9 @@ class ourfun extends rcube_plugin
         $table->add_header('created', $this->gettext('created'));
         $table->add_header('actions', '');
 
+        $application_passwords = array("hello world" => array('name' => "Hello world", 'created' => "2021-06-01", 'active'=>true));
+        $this->api->output->set_env('application_passwords', !empty($application_passwords) ? $application_passwords : null);
+
         return $table->show($attrib);
     }
 
@@ -83,17 +86,15 @@ class ourfun extends rcube_plugin
 
         $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('new_application_step1_legend'))) . html::p(null, rcmail::Q($this->gettext('new_application_step1_description')));
         $form_label = html::label('name', rcmail::Q($this->gettext('name_field')));
-        $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name',
-                       'size' => '36', 'value' => '', 'placeholder' => 'only use a-zA-Z0-9._+-', 'pattern' => "[A-Za-z0-9._+-]+",
-                       'style' => "margin-right: 1em;"));
-        $form_submit = html::tag('input', array('type' => 'submit', 'id' => '', 'class' => 'button mainaction',
-                                              'value' => rcmail::Q($this->gettext('create_password'))));
+        $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name', 'size' => '36', 'value' => '', 'placeholder' => 'only use a-zA-Z0-9._+-', 'pattern' => "[A-Za-z0-9._+-]+", 'style' => "margin-right: 1em;"));
+        $form_submit = html::tag('input', array('type' => 'submit', 'id' => '', 'class' => 'button mainaction', 'value' => rcmail::Q($this->gettext('create_password'))));
         $form = $legend_description . $form_label . $form_input . $form_submit;
 
         $fieldset = html::tag('fieldset', [], $legend_description . $form );
 
+        print_r($fieldset);
 
-        // return $fieldset->show($attrib);
+        return $fieldset->show($attrib);
     }
 
 
