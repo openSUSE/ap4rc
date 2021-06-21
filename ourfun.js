@@ -30,7 +30,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         rcmail.env.application_passwords = {};
     }
     function render() {
-        var table = $('#ourfun tbody');
+        var table = $('#ourfun-applications tbody');
         table.html('');
 
         var rows = 0;

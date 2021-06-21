@@ -30,14 +30,28 @@ class ourfun extends rcube_plugin
     public function init()
     {
         $this->load_config();
-        $this->add_texts('localization/', !$this->api->output->ajax_call);
-        $this->add_hook('settings_actions', array($this, 'settings_actions'));
-        $this->register_action('plugin.ourfun', array($this, 'settings_view'));
+        $this->add_hook('startup', array($this, 'startup'));
+    }
+
+    function startup($args)
+    {
+        $rcmail = rcmail::get_instance();
+        if ($args['task'] === 'settings') {
+            $this->add_texts('localization/', !$this->api->output->ajax_call);
+            $this->add_hook('settings_actions', array($this, 'settings_actions'));
+            $this->register_action('plugin.ourfun', array($this, 'settings_view'));
+        }
+        else {
+            // TODO: register handler here to show the warning about passwords that will expire soon
+            // $this->api->output->show_message("MFA is enforced you need to have at least one 2nd factor configured. Current number of configured MFA tokens: " . $factors_count, 'error');
+
+       }
+       return $args;
     }
 
     public function settings_list($attrib = array())
     {
-        $attrib['id'] = 'ourfun-factors';
+        $attrib['id'] = 'ourfun-applications';
         $table = new html_table(array('cols' => 3));
 
         $table->add_header('name', $this->gettext('application'));
