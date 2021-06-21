@@ -68,7 +68,7 @@ class ourfun extends rcube_plugin
     public function settings_view()
     {
         $this->register_handler('plugin.settingslist', array($this, 'settings_list'));
-        $this->register_handler('plugin.apppassadder', array($this, 'settings_appppassadder'));
+        $this->register_handler('plugin.apppassadder', array($this, 'settings_apppassadder'));
 
         $this->include_script('ourfun.js');
         $this->include_stylesheet($this->local_skin_path() . '/ourfun.css');
@@ -90,11 +90,9 @@ class ourfun extends rcube_plugin
         $form_submit = html::tag('input', array('type' => 'submit', 'id' => '', 'class' => 'button mainaction', 'value' => rcmail::Q($this->gettext('create_password'))));
         $form = $legend_description . $form_label . $form_input . $form_submit;
 
-        $fieldset = html::tag('fieldset', [], $legend_description . $form );
+        $fieldset = html::tag('fieldset', null, $form );
 
-        print_r($fieldset);
-
-        return $fieldset->show($attrib);
+        return $fieldset;
     }
 
 
