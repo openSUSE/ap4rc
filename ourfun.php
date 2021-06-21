@@ -40,6 +40,7 @@ class ourfun extends rcube_plugin
             $this->add_texts('localization/', !$this->api->output->ajax_call);
             $this->add_hook('settings_actions', array($this, 'settings_actions'));
             $this->register_action('plugin.ourfun', array($this, 'settings_view'));
+            $this->register_action('plugin.ourfun-save', array($this, 'settings_save'));
         }
         else {
             // TODO: register handler here to show the warning about passwords that will expire soon
@@ -51,6 +52,7 @@ class ourfun extends rcube_plugin
 
     public function settings_list($attrib = array())
     {
+        $rcmail = rcmail::get_instance();
         $attrib['id'] = 'ourfun-applications';
         $table = new html_table(array('cols' => 3));
 
@@ -58,12 +60,71 @@ class ourfun extends rcube_plugin
         $table->add_header('created', $this->gettext('created'));
         $table->add_header('actions', '');
 
-        $application_passwords = array("hello world" => array('name' => "Hello world", 'created' => "2021-06-01", 'active'=>true));
+        $application_passwords = array();
+
+        // needs to be in SQL format ....
+        // that means units are without the plural "s
+        // application_passwords_soon_expire_interval="7 WEEK"
+        // application_passwords_expire_interval="2 MONTH"
+        $soon_expire_interval = $rcmail->config->get('application_passwords_soon_expire_interval', "300 SECOND");
+        $expire_interval      = $rcmail->config->get('application_passwords_expire_interval',      "900 SECOND");
+
+        $db       = $rcmail->get_dbh();
+        $db_table = $db->table_name('application_passwords', true);
+        $result = $db->query( "
+          SELECT
+              `application`,
+              `created`,
+              (`created` >= NOW() -INTERVAL $soon_expire_interval) AS `soon_expired`,
+              (`created` >= NOW() -INTERVAL $expire_interval) AS `expired`
+            FROM $db_table
+            WHERE
+              `username` = 'jdsn'
+            ORDER BY
+              `created`
+",
+        $rcmail->get_user_name());
+        while ($record = $db->fetch_assoc($result)) {
+           $application_passwords[$record['application']] = array(
+              'name'         => $record['application'],
+              'created'      => $record['created'],
+              'expired'      => $record['expired']      != 1,
+              'soon_expired' => $record['soon_expired'] != 1,
+              'active' => true
+           );
+        }
+
         $this->api->output->set_env('application_passwords', !empty($application_passwords) ? $application_passwords : null);
 
         return $table->show($attrib);
     }
 
+    public function settings_save()
+    {
+        $new_password = $this->random_password();
+        $application  = rcube_utils::get_input_value("new_application_name", rcube_utils::INPUT_POST);
+        $rcmail = rcmail::get_instance();
+        $db       = $rcmail->get_dbh();
+        $db_table = $db->table_name('application_passwords', true);
+        $result = $db->query( "
+          INSERT INTO $db_table
+              (
+                `username`,
+                `application`,
+                `password`
+              )
+              VALUES (?,?,?)
+        ",
+        $rcmail->get_user_name(),
+        $application,
+        $new_password);
+        if ( $db->affected_rows($insert) === 1) {
+           $this->api->output->show_message("Your new password is: " . $new_password, 'error');
+        }
+        else {
+           $this->api->output->show_message("Error while saving your password", 'error');
+        }
+    }
 
     public function settings_view()
     {
@@ -96,7 +157,8 @@ class ourfun extends rcube_plugin
         // $input_id = new html_hiddenfield(array('name' => '_prop[id]', 'value' => ''));
         $out .= html::tag('form', array(
                     'method' => 'post',
-                    'action' => '#',
+                    'action' => '?_task=settings&_action=plugin.ourfun-save',
+                    // 'action' => '#',
                     'id'     => 'ourfun-prop-' . $method,
                     'class'  => 'propform',
                 ),
@@ -119,5 +181,18 @@ class ourfun extends rcube_plugin
         );
 
         return $args;
+    }
+
+    private function random_password()
+    {
+        // TODO: implement password hashing
+        $length = 64;
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]\/*^+%@-';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 }
