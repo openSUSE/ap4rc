@@ -27,6 +27,10 @@
 class ourfun extends rcube_plugin
 {
     # public $task = '(login|settings)';
+
+    private $expire_interval;
+    private $soon_expire_interval;
+
     public function init()
     {
         $this->load_config();
@@ -36,6 +40,14 @@ class ourfun extends rcube_plugin
     function startup($args)
     {
         $rcmail = rcmail::get_instance();
+
+        // needs to be in SQL format ....
+        // that means units are without the plural "s
+        // application_passwords_soon_expire_interval="7 WEEK"
+        // application_passwords_expire_interval="2 MONTH"
+        $this->soon_expire_interval = $rcmail->config->get('application_passwords_soon_expire_interval', "300 SECOND");
+        $this->expire_interval      = $rcmail->config->get('application_passwords_expire_interval',      "900 SECOND");
+
         if ($args['task'] === 'settings') {
             $this->add_texts('localization/', !$this->api->output->ajax_call);
             $this->add_hook('settings_actions', array($this, 'settings_actions'));
@@ -62,21 +74,14 @@ class ourfun extends rcube_plugin
 
         $application_passwords = array();
 
-        // needs to be in SQL format ....
-        // that means units are without the plural "s
-        // application_passwords_soon_expire_interval="7 WEEK"
-        // application_passwords_expire_interval="2 MONTH"
-        $soon_expire_interval = $rcmail->config->get('application_passwords_soon_expire_interval', "300 SECOND");
-        $expire_interval      = $rcmail->config->get('application_passwords_expire_interval',      "900 SECOND");
-
         $db       = $rcmail->get_dbh();
         $db_table = $db->table_name('application_passwords', true);
         $result = $db->query( "
           SELECT
               `application`,
               `created`,
-              (`created` >= NOW() - INTERVAL '$soon_expire_interval') AS `soon_expired`,
-              (`created` >= NOW() - INTERVAL '$expire_interval') AS `expired`
+              (`created` >= NOW() - INTERVAL '$this->soon_expire_interval') AS `soon_expired`,
+              (`created` >= NOW() - INTERVAL '$this->expire_interval') AS `expired`
             FROM $db_table
             WHERE
               `username` = ?
