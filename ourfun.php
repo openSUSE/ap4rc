@@ -75,8 +75,8 @@ class ourfun extends rcube_plugin
           SELECT
               `application`,
               `created`,
-              (`created` >= NOW() -INTERVAL $soon_expire_interval) AS `soon_expired`,
-              (`created` >= NOW() -INTERVAL $expire_interval) AS `expired`
+              (`created` >= NOW() - INTERVAL '$soon_expire_interval') AS `soon_expired`,
+              (`created` >= NOW() - INTERVAL '$expire_interval') AS `expired`
             FROM $db_table
             WHERE
               `username` = ?
