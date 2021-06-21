@@ -51,4 +51,4 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     }
     // render list initially
     render();
-}
+})
