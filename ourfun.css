@@ -35,3 +35,10 @@
 #ourfun-prop-save fieldset label {
   overflow: unset;
 }
+
+.expired {
+  background-color: red;
+}
+.soon_expired {
+  background-color: orange;
+}

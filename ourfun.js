@@ -41,8 +41,17 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
                     button = $('<a class="button icon delete">').attr({href: '#', rel: id})
                         .append($('<span class="inner">').text(rcmail.get_label('remove','ourfun')));
 
+                var cell_class = 'created';
+                if (props.soon_expired)
+                {
+                    cell_class = 'soon_expired';
+                }
+                if (props.expired)
+                {
+                    cell_class = 'expired';
+                }
                 $('<td>').addClass('name').text(props.label || props.name).appendTo(tr);
-                $('<td>').addClass('created').text(props.created || '??').appendTo(tr);
+                $('<td>').addClass(cell_class).text(props.created || '??').appendTo(tr);
                 $('<td>').addClass('actions buttons-cell').append(button).appendTo(tr);
                 rows++;
             }
