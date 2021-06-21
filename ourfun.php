@@ -81,7 +81,7 @@ class ourfun extends rcube_plugin
     public function settings_apppassadder($attrib)
     {
         $rcmail = rcmail::get_instance();
-
+        $method = "save";
         $attrib['id'] = 'ourfun-add';
 
         $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('new_application_step1_legend'))) . html::p(null, rcmail::Q($this->gettext('new_application_step1_description')));
@@ -92,7 +92,19 @@ class ourfun extends rcube_plugin
 
         $fieldset = html::tag('fieldset', null, $form );
 
-        return $fieldset;
+
+        // $input_id = new html_hiddenfield(array('name' => '_prop[id]', 'value' => ''));
+        $out .= html::tag('form', array(
+                    'method' => 'post',
+                    'action' => '#',
+                    'id'     => 'ourfun-prop-' . $method,
+                    'style'  => 'display:none',
+                    'class'  => 'propform',
+                ),
+                $fieldset
+            );
+
+        return $out;
     }
 
 
