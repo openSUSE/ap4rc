@@ -28,3 +28,10 @@
   display: inline;
   width: 50%;
 }
+
+#ourfun-prop-save {
+  margin-bottom: 1em;
+}
+#ourfun-prop-save fieldset label {
+  overflow: unset;
+}
