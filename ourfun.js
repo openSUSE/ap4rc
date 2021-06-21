@@ -50,8 +50,8 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         table.parent().show();
     }
 
-    $('#ourfun-prop-save-button').on('click', '.button.save', function(e) {
-        var lock, data, form = $('#ourfun-prop-' + method),
+    $('#ourfun-prop-save-button').on('click', null, function(e) {
+        var lock, data, form = $('#ourfun-prop-save'),
             application_name = form.find('input[name="new_application_name"]');
 
         if (application_name.length && !application_name.val().length) {
