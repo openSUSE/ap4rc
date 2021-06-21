@@ -46,7 +46,11 @@ class ourfun extends rcube_plugin
         // application_passwords_soon_expire_interval="7 WEEK"
         // application_passwords_expire_interval="2 MONTH"
         $this->soon_expire_interval = $rcmail->config->get('application_passwords_soon_expire_interval', "300 SECOND");
-        $this->expire_interval      = $rcmail->config->get('application_passwords_expire_interval',      "900 SECOND");
+        $this->expire_interval      = $rcmail->config->get('application_passwords_expire_interval',      "3600 SECOND");
+        if ($rcmail->get_dbh()->db_provider == 'postgres' ) {
+          $this->soon_expire_interval = "'" . $this->soon_expire_interval . "'";
+          $this->expire_interval      = "'" . $this->expire_interval . "'";
+        }
 
         if ($args['task'] === 'settings') {
             $this->add_texts('localization/', !$this->api->output->ajax_call);
@@ -55,9 +59,8 @@ class ourfun extends rcube_plugin
             $this->register_action('plugin.ourfun-save', array($this, 'settings_save'));
         }
         else {
-            if (has_passwords_expiring_soon()) {
-                // TODO: implement gettext
-                $this->api->output->show_message("Some of your application passwords will expire soon.");
+            if ($this->has_passwords_expiring_soon()) {
+                $this->api->output->show_message("Some of your application passwords will expire soon.", 'error');
             }
        }
        return $args;
@@ -70,15 +73,15 @@ class ourfun extends rcube_plugin
         $db_table = $db->table_name('application_passwords', true);
         $result = $db->query( "
           SELECT
-              COUNT(*) > 0
+              (COUNT(*) > 0) has_soon_expiring_passwords
             FROM $db_table
             WHERE
               `username` = ? AND
-              (`created` >= NOW() - INTERVAL $this->soon_expire_interval)
+              (`created` < NOW() - INTERVAL $this->soon_expire_interval)
 ",
         $rcmail->get_user_name());
         $record = $db->fetch_assoc($result);
-        return ($record['soon_expired_count']);
+        return (!!$record['has_soon_expiring_passwords']);
     }
 
     public function settings_list($attrib = array())
@@ -99,8 +102,8 @@ class ourfun extends rcube_plugin
           SELECT
               `application`,
               `created`,
-              (`created` >= NOW() - INTERVAL $this->soon_expire_interval) AS `soon_expired`,
-              (`created` >= NOW() - INTERVAL $this->expire_interval) AS `expired`
+              (`created` < NOW() - INTERVAL $this->soon_expire_interval) AS `soon_expired`,
+              (`created` < NOW() - INTERVAL $this->expire_interval) AS `expired`
             FROM $db_table
             WHERE
               `username` = ?
@@ -112,8 +115,8 @@ class ourfun extends rcube_plugin
            $application_passwords[$record['application']] = array(
               'name'         => $record['application'],
               'created'      => $record['created'],
-              'expired'      => $record['expired']      != 1,
-              'soon_expired' => $record['soon_expired'] != 1,
+              'expired'      => !!$record['expired'],
+              'soon_expired' => !!$record['soon_expired'],
               'active' => true
            );
         }
