@@ -1,4 +1,5 @@
 /**
+ *
  * Application Passwords handling for roundcube
  *
  * @author darix & jdsn
@@ -22,3 +23,8 @@
  *
  * @licend
  */
+
+#new_application_name {
+  display: inline;
+  width: 50%;
+}
