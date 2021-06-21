@@ -10,6 +10,8 @@ $labels['application'] = 'Application';
 // Used in step 1 when creating new password
 $labels['new_application_step1_legend'] = 'Step 1 of 2: Generate new application-specific password';
 $labels['new_application_step1_description'] = 'Enter a name to help you remember what application this is for, like "My_Android", "mutt_office", "fetchmail", "Outlook_home", "Thunderbird" ...';
+$labels['missingapplicationname'] = 'Please enter a valid application name';
+
 $labels['name_field'] = 'Name:';
 $labels['create_password'] = 'Generate passsword';
 

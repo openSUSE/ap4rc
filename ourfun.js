@@ -29,6 +29,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     if (!rcmail.env.application_passwords) {
         rcmail.env.application_passwords = {};
     }
+
     function render() {
         var table = $('#ourfun-applications tbody');
         table.html('');
@@ -48,6 +49,25 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         });
         table.parent().show();
     }
+
+    $('#ourfun-prop-save-button').on('click', '.button.save', function(e) {
+        var lock, data, form = $('#ourfun-prop-' + method),
+            application_name = form.find('input[name="new_application_name"]');
+
+        if (application_name.length && !application_name.val().length) {
+            alert(rcmail.get_label('missingapplicationname','ourfun'));
+            application_name.select();
+            return false;
+        }
+
+        data = form_data(form);
+        lock = rcmail.set_busy(true, 'saving');
+        rcmail.http_post('plugin.ourfun-save', {
+            _method: data.id || method,
+            _data: JSON.stringify(data),
+        }, lock);
+    })
+
     // render list initially
     render();
 })
