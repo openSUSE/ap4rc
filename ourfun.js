@@ -60,12 +60,14 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
             return false;
         }
 
+       /* TODO: kolab style JS only submit
         data = form_data(form);
         lock = rcmail.set_busy(true, 'saving');
         rcmail.http_post('plugin.ourfun-save', {
             _method: data.id || method,
             _data: JSON.stringify(data),
         }, lock);
+        */
     })
 
     // render list initially
