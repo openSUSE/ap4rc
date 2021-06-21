@@ -46,8 +46,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
                 rows++;
             }
         });
-
-        table.parent()[(rows > 0 ? 'show' : 'hide')]();
+        table.parent().show();
     }
     // render list initially
     render();
