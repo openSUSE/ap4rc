@@ -103,6 +103,10 @@ class ourfun extends rcube_plugin
     {
         $new_password = $this->random_password();
         $application  = rcube_utils::get_input_value("new_application_name", rcube_utils::INPUT_POST);
+        if (!($this->verify_application_name($application))) {
+           $this->api->output->show_message("Error while saving your password", 'error');
+           return;
+        }
         $rcmail = rcmail::get_instance();
         $db       = $rcmail->get_dbh();
         $db_table = $db->table_name('application_passwords', true);
@@ -124,6 +128,10 @@ class ourfun extends rcube_plugin
         else {
            $this->api->output->show_message("Error while saving your password", 'error');
         }
+    }
+
+    private function verify_application_name($application_name) {
+      return preg_match('/[A-Za-z0-9._+-]+/', $application_name);
     }
 
     public function settings_view()
