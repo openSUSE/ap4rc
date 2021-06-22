@@ -90,7 +90,7 @@ class ap4rc extends rcube_plugin
         $db_table = $db->table_name('application_passwords', true);
         $result = $db->query( "
           SELECT
-              (COUNT(*) > 0) has_soon_expiring_passwords
+              (COUNT(*) > 0) AS has_soon_expiring_passwords
             FROM $db_table
             WHERE
               `username` = ? AND
