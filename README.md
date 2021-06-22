@@ -39,3 +39,22 @@ Default: `64`
 Which characters are allowed in an application name.
 
 Default: `a-zA-Z0-9._+-`
+
+
+## Dovecot side of things
+
+The proposed SQL Query configuration
+
+The interval at the end should match the ap4rc_expire_interval to get a consistent behavior.
+
+### PostgreSQL
+
+```
+password_query = SELECT username,password FROM application_passwords WHERE username='%u' AND created >= NOW() - INTERVAL '2 MONTH';
+```
+
+### MariaDB/MySQL
+
+```
+password_query = SELECT username,password FROM application_passwords WHERE username='%u' AND created >= NOW() - INTERVAL 2 MONTH;
+```
