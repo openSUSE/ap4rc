@@ -6,6 +6,13 @@ $labels['remove'] = 'Remove';
 $labels['settingslist'] = 'Application Specific Passwords';
 $labels['settingstitle'] = 'Application Specific Passwords';
 
+$labels['popup_expire_soon'] = 'Some of your application passwords will expire soon.';
+$labels['popup_format_save_error'] = 'Error while saving your password: The format did not match the format.';
+$labels['popup_generic_save_error'] = 'Error while saving your password';
+
+$labels['creation_date'] = 'Created at';
+$labels['expiry_date']   = 'Expire at';
+
 $labels['application'] = 'Application';
 // Used in step 1 when creating new password
 $labels['new_application_step1_legend'] = 'Step 1 of 2: Generate new application-specific password';
