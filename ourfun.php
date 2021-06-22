@@ -60,8 +60,8 @@ class ourfun extends rcube_plugin
           $this->expire_interval      = "'" . $this->expire_interval . "'";
         }
 
+        $this->add_texts('localization/', !$this->api->output->ajax_call);
         if ($args['task'] === 'settings') {
-            $this->add_texts('localization/', !$this->api->output->ajax_call);
             $this->add_hook('settings_actions', array($this, 'settings_actions'));
             $this->register_action('plugin.ourfun', array($this, 'settings_view'));
             $this->register_action('plugin.ourfun-save', array($this, 'settings_save'));
