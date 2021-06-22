@@ -9,6 +9,7 @@ $labels['settingstitle'] = 'Application Specific Passwords';
 $labels['popup_expire_soon'] = 'Some of your application passwords will expire soon.';
 $labels['popup_format_save_error'] = 'Error while saving your password: The format did not match the format.';
 $labels['popup_generic_save_error'] = 'Error while saving your password';
+$labels['popup_duplicate_save_error'] = 'Error while saving your password: Do not reuse application names';
 $labels['popup_successful_deletion'] = 'Successfully deleted the entry';
 
 $labels['creation_date'] = 'Created at';

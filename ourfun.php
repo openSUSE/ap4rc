@@ -170,8 +170,11 @@ class ourfun extends rcube_plugin
     public function settings_save()
     {
         // We need this password for the plugin.new_password hook
-        $this->new_password = $this->random_password();
-        $new_password = $this->hash_password($this->new_password);
+        $new_password = $this->random_password();
+        $hashed_password = $this->hash_password($this->new_password);
+        $this->password_save_error = $this->gettext('popup_duplicate_save_error');
+        rcube::write_log('ourfun', "hi!");
+
         $application  = rcube_utils::get_input_value("new_application_name", rcube_utils::INPUT_POST);
         if (!($this->verify_application_name($application))) {
            $this->api->output->show_message($this->gettext('popup_format_save_error'), 'error');
@@ -191,11 +194,11 @@ class ourfun extends rcube_plugin
         ",
         $rcmail->get_user_name(),
         $application,
-        $new_password);
-        // TODO: this will not catch the duplicate error. no idea yet.
-        if ($result && !$db->affected_rows($result)) {
-          $this->new_password = null;
-          $this->password_save_error = $this->gettext('popup_generic_save_error');
+        $hashed_password);
+
+        // This code will only be reached if we did not see a duplicate entry exception
+        if ($result && !$db->is_error($result)) {
+          $this->new_password = $new_password;
         }
         return $this->settings_view();
     }
