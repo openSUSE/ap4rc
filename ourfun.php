@@ -31,11 +31,13 @@ class ourfun extends rcube_plugin
     private $expire_interval;
     private $soon_expire_interval;
     private $new_password;
+    private $password_save_error;
 
     public function init()
     {
         $this->load_config();
         $this->new_password = null;
+        $this->password_save_error = null;
         $this->add_hook('startup', array($this, 'startup'));
     }
 
@@ -180,13 +182,12 @@ class ourfun extends rcube_plugin
         $rcmail->get_user_name(),
         $application,
         $new_password);
-        if ( $db->affected_rows($insert) === 1) {
-           return $this->settings_view();
+        // TODO: this will not catch the duplicate error. no idea yet.
+        if ($result && !$db->affected_rows($result)) {
+          $this->new_password = null;
+          $this->password_save_error = $this->gettext('popup_generic_save_error');
         }
-        else {
-           // TODO: gettext
-           $this->api->output->show_message("Error while saving your password", 'error');
-        }
+        return $this->settings_view();
     }
 
     private function verify_application_name($application_name) {
@@ -210,6 +211,9 @@ class ourfun extends rcube_plugin
     public function show_new_password () {
         if ($this->new_password) {
            return html::tag('div', array('id'=>'new_password'), $this->new_password);
+        }
+        if ($this->password_save_error) {
+           return html::tag('div', array('id'=>'new_password_error'), $this->password_save_error);
         }
     }
 
