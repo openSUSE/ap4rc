@@ -53,6 +53,7 @@
   cursor: copy;
 }
 
-.action-plugin-ourfun .scroller {
+.action-plugin-ourfun .scroller,
+.action-plugin-ourfun-save .scroller {
   overflow: scroll;
 }
