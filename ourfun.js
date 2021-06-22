@@ -42,20 +42,20 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
 
     })
     function tag_copy_divs() {
-	var copy = document.querySelectorAll("#new_password");
+        var copy = document.querySelectorAll("#new_password");
 
-	for (const copied of copy) {
-	  copied.onclick = function() {
-	    document.execCommand("copy");
-	  };
-	  copied.addEventListener("copy", function(event) {
-	    event.preventDefault();
-	    if (event.clipboardData) {
-	      event.clipboardData.setData("text/plain", copied.textContent);
-	      console.log(event.clipboardData.getData("text"))
-	    };
-	  });
-	};
+        for (const copied of copy) {
+            copied.onclick = function() {
+                document.execCommand("copy");
+            };
+            copied.addEventListener("copy", function(event) {
+                event.preventDefault();
+                if (event.clipboardData) {
+                    event.clipboardData.setData("text/plain", copied.textContent);
+                    console.log(event.clipboardData.getData("text"))
+                };
+            });
+        };
     }
    tag_copy_divs();
 })
