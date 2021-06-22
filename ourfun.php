@@ -51,7 +51,7 @@ class ourfun extends rcube_plugin
         // that means units are without the plural "s
         // application_passwords_soon_expire_interval="7 WEEK"
         // application_passwords_expire_interval="2 MONTH"
-        $this->soon_expire_interval = $rcmail->config->get('application_passwords_soon_expire_interval', "300 SECOND");
+        $this->soon_expire_interval = $rcmail->config->get('application_passwords_soon_expire_interval', "30 SECOND");
         $this->expire_interval      = $rcmail->config->get('application_passwords_expire_interval',      "3600 SECOND");
         if ($rcmail->get_dbh()->db_provider == 'postgres' ) {
           $this->soon_expire_interval = "'" . $this->soon_expire_interval . "'";
@@ -118,7 +118,7 @@ class ourfun extends rcube_plugin
         $table = new html_table(array('cols' => 3));
 
         $table->add_header('name', $this->gettext('application'));
-        $table->add_header('creation_date', $this->gettext('creation_date'));
+        // $table->add_header('creation_date', $this->gettext('creation_date'));
         $table->add_header('expiry_date', $this->gettext('expiry_date'));
         $table->add_header('actions', '');
 
