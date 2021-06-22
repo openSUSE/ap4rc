@@ -52,3 +52,7 @@
   font-family: monospace;
   cursor: copy;
 }
+
+.action-plugin-ourfun .scroller {
+  overflow: scroll;
+}
