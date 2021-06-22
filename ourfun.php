@@ -146,13 +146,6 @@ class ourfun extends rcube_plugin
            );
            $table->add(array('class' => 'actions buttons-cell'), $delete_link);
            /*
-                    button = $('<a class="button icon delete">').attr({href: '#', rel: id})
-                        .append($('<span class="inner">').text(rcmail.get_label('remove','ourfun')));
-
-                $('<td>').addClass('actions buttons-cell').append(button).appendTo(tr);
-            }
-           */
-           /*
            $application_passwords[$record['application']] = array(
               'name'         => $record['application'],
               'created'      => $record['created'],
