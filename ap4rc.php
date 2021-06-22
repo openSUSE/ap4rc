@@ -34,6 +34,7 @@ class ap4rc extends rcube_plugin
     private $new_application;
     private $password_save_success;
     private $password_save_error;
+    private $application_name_characters;
 
     public function init()
     {
@@ -42,6 +43,7 @@ class ap4rc extends rcube_plugin
         $this->new_application = null;
         $this->password_save_error = null;
         $this->password_save_success = null;
+        $this->application_name_characters = null;
         $this->add_hook('startup', array($this, 'startup'));
     }
 
@@ -53,6 +55,7 @@ class ap4rc extends rcube_plugin
         // that means units are without the plural "s
         // ap4rc_warning_interval="7 WEEK"
         // ap4rc_expire_interval="2 MONTH"
+        $this->application_name_characters = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
         $this->warning_interval = $rcmail->config->get('ap4rc_warning_interval', "30 SECOND");
         $this->expire_interval      = $rcmail->config->get('ap4rc_expire_interval',      "3600 SECOND");
         if ($rcmail->get_dbh()->db_provider == 'postgres' ) {
@@ -225,7 +228,7 @@ class ap4rc extends rcube_plugin
     }
 
     private function verify_application_name($application_name) {
-      return preg_match('/[A-Za-z0-9._+-]+/', $application_name);
+      return preg_match('/[' . $this->application_name_characters . ']+/', $application_name);
     }
 
     public function settings_view()
@@ -267,9 +270,9 @@ class ap4rc extends rcube_plugin
 
         $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('settingstitle'))) .
                 html::p(null, rcmail::Q($this->gettext('new_application_description')) . html::br() .
-                              rcmail::Q($this->gettext('only_valid_characters')) . " FIXME: a-zA-Z0-9._+-"  );
+                              rcmail::Q($this->gettext('only_valid_characters')) . $this->application_name_characters );
         $form_label  = html::label('new_application_name', rcmail::Q($this->gettext('name_field')));
-        $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name', 'size' => '36', 'value' => '', 'placeholder' => 'only use a-zA-Z0-9._+-', 'pattern' => "[A-Za-z0-9._+-]+", 'style' => "margin-right: 1em;"));
+        $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name', 'size' => '36', 'value' => '', 'placeholder' => 'only use ' . $this->application_name_characters, 'pattern' => "[" . $this->application_name_characters . "]+", 'style' => "margin-right: 1em;"));
         $form_submit = html::tag('input', array('type' => 'submit', 'id' => 'ap4rc-prop-save-button', 'class' => 'button mainaction save', 'value' => rcmail::Q($this->gettext('create_password'))));
         $form = $legend_description . $form_label . $form_input . $form_submit;
 
