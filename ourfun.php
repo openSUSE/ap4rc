@@ -86,7 +86,7 @@ class ourfun extends rcube_plugin
             FROM $db_table
             WHERE
               `username` = ? AND
-              (`created` < NOW() - INTERVAL $this->soon_expire_interval)
+              (`created` < NOW() - INTERVAL $this->expire_interval + INTERVAL $this->soon_expire_interval )
 ",
         $rcmail->get_user_name());
         $record = $db->fetch_assoc($result);
@@ -106,7 +106,7 @@ class ourfun extends rcube_plugin
               `application`,
               `created`,
               (`created` + INTERVAL $this->expire_interval) AS `expiry`,
-              (`created` < NOW() - INTERVAL $this->soon_expire_interval) AS `soon_expired`,
+              (`created` < NOW() - INTERVAL $this->expire_interval + INTERVAL $this->soon_expire_interval) AS `soon_expired`,
               (`created` < NOW() - INTERVAL $this->expire_interval) AS `expired`
             FROM $db_table
             WHERE
