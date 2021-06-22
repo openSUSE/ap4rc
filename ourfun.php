@@ -115,7 +115,7 @@ class ourfun extends rcube_plugin
         $rcmail->get_user_name());
         $attrib['id'] = 'ourfun-applications';
 
-        $table = new html_table(array('cols' => 4));
+        $table = new html_table(array('cols' => 3));
 
         $table->add_header('name', $this->gettext('application'));
         $table->add_header('creation_date', $this->gettext('creation_date'));
@@ -134,7 +134,7 @@ class ourfun extends rcube_plugin
            }
 
            $table->add(null,       $record['application']);
-           $table->add(null,       $record['created']);
+           // $table->add(null,       $record['created']);
            $table->add($css_class, $record['expiry']);
            $delete_link = html::tag('a',
              array(
