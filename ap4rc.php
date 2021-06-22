@@ -35,6 +35,7 @@ class ap4rc extends rcube_plugin
     private $password_save_success;
     private $password_save_error;
     private $application_name_characters;
+    private $generated_password_length;
 
     public function init()
     {
@@ -44,6 +45,7 @@ class ap4rc extends rcube_plugin
         $this->password_save_error = null;
         $this->password_save_success = null;
         $this->application_name_characters = null;
+        $this->generated_password_length = 64;
         $this->add_hook('startup', array($this, 'startup'));
     }
 
@@ -53,11 +55,13 @@ class ap4rc extends rcube_plugin
 
         // needs to be in SQL format ....
         // that means units are without the plural "s
-        // ap4rc_warning_interval="7 WEEK"
+        // ap4rc_warning_interval="1 WEEK"
         // ap4rc_expire_interval="2 MONTH"
         $this->application_name_characters = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
-        $this->warning_interval = $rcmail->config->get('ap4rc_warning_interval', "30 SECOND");
-        $this->expire_interval      = $rcmail->config->get('ap4rc_expire_interval',      "3600 SECOND");
+        $this->generated_password_length   = $rcmail->config->get('ap4rc_generated_password_length', 64);
+        $this->warning_interval            = $rcmail->config->get('ap4rc_warning_interval', "30 SECOND");
+        $this->expire_interval             = $rcmail->config->get('ap4rc_expire_interval',      "3600 SECOND");
+
         if ($rcmail->get_dbh()->db_provider == 'postgres' ) {
           $this->warning_interval = "'" . $this->warning_interval . "'";
           $this->expire_interval      = "'" . $this->expire_interval . "'";
@@ -309,11 +313,10 @@ class ap4rc extends rcube_plugin
 
     private function random_password()
     {
-        $length = 64;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]\/*^+%@-';
         $charactersLength = strlen($characters);
         $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $this->generated_password_length; $i++) {
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
