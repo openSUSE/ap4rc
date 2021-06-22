@@ -41,6 +41,15 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         }
 
     })
+
+    $('#ourfun-applications tbody .button.delete').on('click', null, function(e) {
+        var id = $(this).attr('rel');
+        var lock = rcmail.set_busy(true, 'saving');
+        if (rcmail.http_post('plugin.ourfun-delete', { remove_id: id }, lock)) {
+           $(this).parent().parent().remove();
+        }
+    });
+
     function tag_copy_divs() {
         var copy = document.querySelectorAll("#new_password");
 
