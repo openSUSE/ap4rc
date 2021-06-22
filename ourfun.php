@@ -60,6 +60,7 @@ class ourfun extends rcube_plugin
         }
         else {
             if ($this->has_passwords_expiring_soon()) {
+                // TODO: gettext
                 $this->api->output->show_message("Some of your application passwords will expire soon.", 'error');
             }
        }
@@ -131,7 +132,8 @@ class ourfun extends rcube_plugin
         $new_password = $this->random_password();
         $application  = rcube_utils::get_input_value("new_application_name", rcube_utils::INPUT_POST);
         if (!($this->verify_application_name($application))) {
-           $this->api->output->show_message("Error while saving your password", 'error');
+           // TODO: gettext
+           $this->api->output->show_message("Error while saving your password: The format did not match the format.", 'error');
            return;
         }
         $rcmail = rcmail::get_instance();
@@ -150,9 +152,11 @@ class ourfun extends rcube_plugin
         $application,
         $new_password);
         if ( $db->affected_rows($insert) === 1) {
+           // TODO: gettext
            $this->api->output->show_message("Your new password is: " . $new_password, 'error');
         }
         else {
+           // TODO: gettext
            $this->api->output->show_message("Error while saving your password", 'error');
         }
     }
