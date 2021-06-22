@@ -31,6 +31,7 @@ class ourfun extends rcube_plugin
     private $expire_interval;
     private $soon_expire_interval;
     private $new_password;
+    private $new_application;
     private $password_save_success;
     private $password_save_error;
 
@@ -38,6 +39,7 @@ class ourfun extends rcube_plugin
     {
         $this->load_config();
         $this->new_password = null;
+        $this->new_application = null;
         $this->password_save_error = null;
         $this->password_save_success = null;
         $this->add_hook('startup', array($this, 'startup'));
@@ -200,6 +202,7 @@ class ourfun extends rcube_plugin
         // This code will only be reached if we did not see a duplicate entry exception
         if ($result && $db->affected_rows($result) > 0) {
           $this->new_password = $new_password;
+          $this->new_application = $application;
           $this->password_save_error = null;
         }
         return $this->settings_view();
@@ -241,7 +244,12 @@ class ourfun extends rcube_plugin
 
     public function show_new_password () {
         if ($this->new_password) {
-           return html::tag('div',null, $this->gettext('new_application_step2_description')) . html::tag('div', array('id'=>'new_password'), $this->new_password);
+           return html::tag('div',null,
+             html::p(null, $this->gettext('new_application_ready') .
+             html::span(array('style' => 'font-weight: bold;'), rcmail::Q( " " . $this->new_application)) . html::br() .
+             html::span(array('style' => 'font-weight: bold;'), $this->gettext('new_application_copy')) . html::br() .
+             $this->gettext('new_application_once')) .
+             html::tag('div', array('id'=>'new_password'), $this->new_password) );
         }
         if ($this->password_save_error) {
            return html::tag('div', array('id'=>'new_password_error'), $this->password_save_error);
@@ -257,7 +265,9 @@ class ourfun extends rcube_plugin
         $method = "save";
         $attrib['id'] = 'ourfun-add';
 
-        $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('new_application_step1_legend'))) . html::p(null, rcmail::Q($this->gettext('new_application_step1_description')));
+        $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('settingstitle'))) .
+                html::p(null, rcmail::Q($this->gettext('new_application_description')) . html::br() .
+                              rcmail::Q($this->gettext('only_valid_characters')) . " FIXME: a-zA-Z0-9._+-"  );
         $form_label  = html::label('new_application_name', rcmail::Q($this->gettext('name_field')));
         $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name', 'size' => '36', 'value' => '', 'placeholder' => 'only use a-zA-Z0-9._+-', 'pattern' => "[A-Za-z0-9._+-]+", 'style' => "margin-right: 1em;"));
         $form_submit = html::tag('input', array('type' => 'submit', 'id' => 'ourfun-prop-save-button', 'class' => 'button mainaction save', 'value' => rcmail::Q($this->gettext('create_password'))));
