@@ -241,7 +241,7 @@ class ourfun extends rcube_plugin
 
     public function show_new_password () {
         if ($this->new_password) {
-           return html::tag('div', array('id'=>'new_password'), $this->new_password);
+           return html::tag('div',null, $this->gettext('new_application_step2_description')) . html::tag('div', array('id'=>'new_password'), $this->new_password);
         }
         if ($this->password_save_error) {
            return html::tag('div', array('id'=>'new_password_error'), $this->password_save_error);
