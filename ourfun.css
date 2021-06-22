@@ -37,10 +37,10 @@
 }
 
 .expired {
-  background-color: red;
+  background-color: var(--danger);
 }
 .soon_expired {
-  background-color: orange;
+  background-color: var(--warning);
 }
 
 #new_password {
