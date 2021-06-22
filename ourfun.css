@@ -53,6 +53,12 @@
   cursor: copy;
 }
 
+#new_password_error {
+  width: 75%;
+  font-size: 200%;
+  padding: 1em;
+}
+
 .action-plugin-ourfun .scroller,
 .action-plugin-ourfun-save .scroller {
   overflow: scroll;
