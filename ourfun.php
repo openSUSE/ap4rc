@@ -29,7 +29,7 @@ class ourfun extends rcube_plugin
     # public $task = '(login|settings)';
 
     private $expire_interval;
-    private $soon_expire_interval;
+    private $warning_interval;
     private $new_password;
     private $new_application;
     private $password_save_success;
@@ -51,12 +51,12 @@ class ourfun extends rcube_plugin
 
         // needs to be in SQL format ....
         // that means units are without the plural "s
-        // application_passwords_soon_expire_interval="7 WEEK"
+        // application_passwords_warning_interval="7 WEEK"
         // application_passwords_expire_interval="2 MONTH"
-        $this->soon_expire_interval = $rcmail->config->get('application_passwords_soon_expire_interval', "30 SECOND");
+        $this->warning_interval = $rcmail->config->get('application_passwords_warning_interval', "30 SECOND");
         $this->expire_interval      = $rcmail->config->get('application_passwords_expire_interval',      "3600 SECOND");
         if ($rcmail->get_dbh()->db_provider == 'postgres' ) {
-          $this->soon_expire_interval = "'" . $this->soon_expire_interval . "'";
+          $this->warning_interval = "'" . $this->warning_interval . "'";
           $this->expire_interval      = "'" . $this->expire_interval . "'";
         }
 
@@ -86,7 +86,7 @@ class ourfun extends rcube_plugin
             FROM $db_table
             WHERE
               `username` = ? AND
-              (`created` < NOW() - INTERVAL $this->expire_interval + INTERVAL $this->soon_expire_interval )
+              (`created` < NOW() - INTERVAL $this->expire_interval + INTERVAL $this->warning_interval )
 ",
         $rcmail->get_user_name());
         $record = $db->fetch_assoc($result);
@@ -106,7 +106,7 @@ class ourfun extends rcube_plugin
               `application`,
               `created`,
               (`created` + INTERVAL $this->expire_interval) AS `expiry`,
-              (`created` < NOW() - INTERVAL $this->expire_interval + INTERVAL $this->soon_expire_interval) AS `soon_expired`,
+              (`created` < NOW() - INTERVAL $this->expire_interval + INTERVAL $this->warning_interval) AS `soon_expired`,
               (`created` < NOW() - INTERVAL $this->expire_interval) AS `expired`
             FROM $db_table
             WHERE
