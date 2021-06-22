@@ -31,6 +31,7 @@ class ourfun extends rcube_plugin
     private $expire_interval;
     private $soon_expire_interval;
     private $new_password;
+    private $password_save_success;
     private $password_save_error;
 
     public function init()
@@ -38,6 +39,7 @@ class ourfun extends rcube_plugin
         $this->load_config();
         $this->new_password = null;
         $this->password_save_error = null;
+        $this->password_save_success = null;
         $this->add_hook('startup', array($this, 'startup'));
     }
 
@@ -61,6 +63,7 @@ class ourfun extends rcube_plugin
             $this->add_hook('settings_actions', array($this, 'settings_actions'));
             $this->register_action('plugin.ourfun', array($this, 'settings_view'));
             $this->register_action('plugin.ourfun-save', array($this, 'settings_save'));
+            $this->register_action('plugin.ourfun-delete', array($this, 'settings_delete'));
         }
         else {
             if ($this->has_passwords_expiring_soon()) {
@@ -97,6 +100,7 @@ class ourfun extends rcube_plugin
         $db_table = $db->table_name('application_passwords', true);
         $result = $db->query( "
           SELECT
+              `id`,
               `application`,
               `created`,
               (`created` + INTERVAL $this->expire_interval) AS `expiry`,
@@ -111,7 +115,7 @@ class ourfun extends rcube_plugin
         $rcmail->get_user_name());
         $attrib['id'] = 'ourfun-applications';
 
-        $table = new html_table(array('cols' => 3));
+        $table = new html_table(array('cols' => 4));
 
         $table->add_header('name', $this->gettext('application'));
         $table->add_header('creation_date', $this->gettext('creation_date'));
@@ -132,9 +136,22 @@ class ourfun extends rcube_plugin
            $table->add(null,       $record['application']);
            $table->add(null,       $record['created']);
            $table->add($css_class, $record['expiry']);
-           // TODO: add delete functionality
-           $table->add(null,       'Delete me if you can');
+           $delete_link = html::tag('a',
+             array(
+               'class' => 'button icon delete',
+               'rel'=>$record['id'],
+               'href' => '#'
+             ),
+             html::tag('span', null, $this->gettext('remove'))
+           );
+           $table->add(array('class' => 'actions buttons-cell'), $delete_link);
+           /*
+                    button = $('<a class="button icon delete">').attr({href: '#', rel: id})
+                        .append($('<span class="inner">').text(rcmail.get_label('remove','ourfun')));
 
+                $('<td>').addClass('actions buttons-cell').append(button).appendTo(tr);
+            }
+           */
            /*
            $application_passwords[$record['application']] = array(
               'name'         => $record['application'],
@@ -190,6 +207,22 @@ class ourfun extends rcube_plugin
         return $this->settings_view();
     }
 
+    public function settings_delete()
+    {
+        $application_id = rcube_utils::get_input_value("remove_id", rcube_utils::INPUT_POST);
+        $rcmail = rcmail::get_instance();
+        $db       = $rcmail->get_dbh();
+        $db_table = $db->table_name('application_passwords', true);
+        $result = $db->query( "DELETE FROM $db_table WHERE id = ?", $application_id);
+        if ($result && !$db->affected_rows($result)) {
+          $this->password_save_error = $this->gettext('popup_generic_save_error');
+        }
+        else {
+          $this->password_save_success = $this->gettext('popup_successful_deletion');
+        }
+        return $this->settings_view();
+    }
+
     private function verify_application_name($application_name) {
       return preg_match('/[A-Za-z0-9._+-]+/', $application_name);
     }
@@ -214,6 +247,9 @@ class ourfun extends rcube_plugin
         }
         if ($this->password_save_error) {
            return html::tag('div', array('id'=>'new_password_error'), $this->password_save_error);
+        }
+        if ($this->password_save_success) {
+           $this->api->output->show_message($this->gettext('popup_successful_save'), 'error');
         }
     }
 
