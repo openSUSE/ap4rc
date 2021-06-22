@@ -24,7 +24,7 @@
  * @licend
  */
 
-class ourfun extends rcube_plugin
+class ap4rc extends rcube_plugin
 {
     # public $task = '(login|settings)';
 
@@ -51,10 +51,10 @@ class ourfun extends rcube_plugin
 
         // needs to be in SQL format ....
         // that means units are without the plural "s
-        // application_passwords_warning_interval="7 WEEK"
-        // application_passwords_expire_interval="2 MONTH"
-        $this->warning_interval = $rcmail->config->get('application_passwords_warning_interval', "30 SECOND");
-        $this->expire_interval      = $rcmail->config->get('application_passwords_expire_interval',      "3600 SECOND");
+        // ap4rc_warning_interval="7 WEEK"
+        // ap4rc_expire_interval="2 MONTH"
+        $this->warning_interval = $rcmail->config->get('ap4rc_warning_interval', "30 SECOND");
+        $this->expire_interval      = $rcmail->config->get('ap4rc_expire_interval',      "3600 SECOND");
         if ($rcmail->get_dbh()->db_provider == 'postgres' ) {
           $this->warning_interval = "'" . $this->warning_interval . "'";
           $this->expire_interval      = "'" . $this->expire_interval . "'";
@@ -63,9 +63,9 @@ class ourfun extends rcube_plugin
         $this->add_texts('localization/', !$this->api->output->ajax_call);
         if ($args['task'] === 'settings') {
             $this->add_hook('settings_actions', array($this, 'settings_actions'));
-            $this->register_action('plugin.ourfun', array($this, 'settings_view'));
-            $this->register_action('plugin.ourfun-save', array($this, 'settings_save'));
-            $this->register_action('plugin.ourfun-delete', array($this, 'settings_delete'));
+            $this->register_action('plugin.ap4rc', array($this, 'settings_view'));
+            $this->register_action('plugin.ap4rc-save', array($this, 'settings_save'));
+            $this->register_action('plugin.ap4rc-delete', array($this, 'settings_delete'));
         }
         else {
             if ($this->has_passwords_expiring_soon()) {
@@ -115,7 +115,7 @@ class ourfun extends rcube_plugin
               `created`
 ",
         $rcmail->get_user_name());
-        $attrib['id'] = 'ourfun-applications';
+        $attrib['id'] = 'ap4rc-applications';
 
         $table = new html_table(array('cols' => 3));
 
@@ -234,12 +234,12 @@ class ourfun extends rcube_plugin
         $this->register_handler('plugin.new_password', array($this, 'show_new_password'));
         $this->register_handler('plugin.apppassadder', array($this, 'settings_apppassadder'));
 
-        $this->include_script('ourfun.js');
-        $this->include_stylesheet($this->local_skin_path() . '/ourfun.css');
+        $this->include_script('ap4rc.js');
+        $this->include_stylesheet($this->local_skin_path() . '/ap4rc.css');
 
         $this->api->output->add_label('save','cancel');
         $this->api->output->set_pagetitle($this->gettext('settingstitle'));
-        $this->api->output->send('ourfun.config');
+        $this->api->output->send('ap4rc.config');
     }
 
     public function show_new_password () {
@@ -263,14 +263,14 @@ class ourfun extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
         $method = "save";
-        $attrib['id'] = 'ourfun-add';
+        $attrib['id'] = 'ap4rc-add';
 
         $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('settingstitle'))) .
                 html::p(null, rcmail::Q($this->gettext('new_application_description')) . html::br() .
                               rcmail::Q($this->gettext('only_valid_characters')) . " FIXME: a-zA-Z0-9._+-"  );
         $form_label  = html::label('new_application_name', rcmail::Q($this->gettext('name_field')));
         $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name', 'size' => '36', 'value' => '', 'placeholder' => 'only use a-zA-Z0-9._+-', 'pattern' => "[A-Za-z0-9._+-]+", 'style' => "margin-right: 1em;"));
-        $form_submit = html::tag('input', array('type' => 'submit', 'id' => 'ourfun-prop-save-button', 'class' => 'button mainaction save', 'value' => rcmail::Q($this->gettext('create_password'))));
+        $form_submit = html::tag('input', array('type' => 'submit', 'id' => 'ap4rc-prop-save-button', 'class' => 'button mainaction save', 'value' => rcmail::Q($this->gettext('create_password'))));
         $form = $legend_description . $form_label . $form_input . $form_submit;
 
         $fieldset = html::tag('fieldset', null, $form );
@@ -279,8 +279,8 @@ class ourfun extends rcube_plugin
         // $input_id = new html_hiddenfield(array('name' => '_prop[id]', 'value' => ''));
         $out .= html::tag('form', array(
                     'method' => 'post',
-                    'action' => '?_task=settings&_action=plugin.ourfun-save',
-                    'id'     => 'ourfun-prop-' . $method,
+                    'action' => '?_task=settings&_action=plugin.ap4rc-save',
+                    'id'     => 'ap4rc-prop-' . $method,
                     'class'  => 'propform',
                 ),
                 $fieldset
@@ -294,11 +294,11 @@ class ourfun extends rcube_plugin
     {
         // register as settings action
         $args['actions'][] = array(
-            'action' => 'plugin.ourfun',
-            'class'  => 'ourfun',
+            'action' => 'plugin.ap4rc',
+            'class'  => 'ap4rc',
             'label'  => 'settingslist',
             'title'  => 'settingstitle',
-            'domain' => 'ourfun',
+            'domain' => 'ap4rc',
         );
 
         return $args;

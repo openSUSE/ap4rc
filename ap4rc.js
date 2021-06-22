@@ -30,22 +30,22 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         rcmail.env.application_passwords = {};
     }
 
-    $('#ourfun-prop-save-button').on('click', null, function(e) {
-        var lock, data, form = $('#ourfun-prop-save'),
+    $('#ap4rc-prop-save-button').on('click', null, function(e) {
+        var lock, data, form = $('#ap4rc-prop-save'),
             application_name = form.find('input[name="new_application_name"]');
 
         if (application_name.length && !application_name.val().length) {
-            alert(rcmail.get_label('missingapplicationname','ourfun'));
+            alert(rcmail.get_label('missingapplicationname','ap4rc'));
             application_name.select();
             return false;
         }
 
     })
 
-    $('#ourfun-applications tbody .button.delete').on('click', null, function(e) {
+    $('#ap4rc-applications tbody .button.delete').on('click', null, function(e) {
         var id = $(this).attr('rel');
         var lock = rcmail.set_busy(true, 'saving');
-        if (rcmail.http_post('plugin.ourfun-delete', { remove_id: id }, lock)) {
+        if (rcmail.http_post('plugin.ap4rc-delete', { remove_id: id }, lock)) {
            $(this).parent().parent().remove();
         }
     });
@@ -61,7 +61,6 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
                 event.preventDefault();
                 if (event.clipboardData) {
                     event.clipboardData.setData("text/plain", copied.textContent);
-                    console.log(event.clipboardData.getData("text"))
                 };
             });
         };

@@ -29,10 +29,10 @@
   width: 50%;
 }
 
-#ourfun-prop-save {
+#ap4rc-prop-save {
   margin-bottom: 1em;
 }
-#ourfun-prop-save fieldset label {
+#ap4rc-prop-save fieldset label {
   overflow: unset;
 }
 
@@ -59,7 +59,7 @@
   padding: 1em;
 }
 
-.action-plugin-ourfun .scroller,
-.action-plugin-ourfun-save .scroller {
+.action-plugin-ap4rc .scroller,
+.action-plugin-ap4rc-save .scroller {
   overflow: scroll;
 }
