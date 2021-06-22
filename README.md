@@ -13,6 +13,7 @@ Intervals are using the SQL syntax. So if you want to have a password expire in
 ```php
 $config['ap4rc_expire_interval'] = "2 MONTH";
 $config['ap4rc_warning_interval'] = "1 WEEK";
+```
 
 `ap4rc_expire_interval`
 
