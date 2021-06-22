@@ -163,8 +163,10 @@ class ourfun extends rcube_plugin
     }
 
     private function hash_password($password) {
-        // TODO: implement password hashing here
-        return $password;
+        // TODO: implement dovecot password hashing here
+        // see PR from postfixadmin https://github.com/postfixadmin/postfixadmin/pull/491
+        // for now we use the same method as the old plugin
+        return hash('sha512', $password);
     }
 
     public function settings_save()
