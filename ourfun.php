@@ -30,10 +30,12 @@ class ourfun extends rcube_plugin
 
     private $expire_interval;
     private $soon_expire_interval;
+    private $new_password;
 
     public function init()
     {
         $this->load_config();
+        $this->new_password = null;
         $this->add_hook('startup', array($this, 'startup'));
     }
 
@@ -88,13 +90,6 @@ class ourfun extends rcube_plugin
     public function settings_list($attrib = array())
     {
         $rcmail = rcmail::get_instance();
-        $attrib['id'] = 'ourfun-applications';
-        $table = new html_table(array('cols' => 3));
-
-        $table->add_header('name', $this->gettext('application'));
-        $table->add_header('created', $this->gettext('created'));
-        $table->add_header('actions', '');
-
         $application_passwords = array();
 
         $db       = $rcmail->get_dbh();
@@ -103,6 +98,7 @@ class ourfun extends rcube_plugin
           SELECT
               `application`,
               `created`,
+              (`created` + INTERVAL $this->expire_interval) AS `expiry`,
               (`created` < NOW() - INTERVAL $this->soon_expire_interval) AS `soon_expired`,
               (`created` < NOW() - INTERVAL $this->expire_interval) AS `expired`
             FROM $db_table
@@ -112,14 +108,42 @@ class ourfun extends rcube_plugin
               `created`
 ",
         $rcmail->get_user_name());
+        $attrib['id'] = 'ourfun-applications';
+
+        $table = new html_table(array('cols' => 3));
+
+        $table->add_header('name', $this->gettext('application'));
+        $table->add_header('creation_date', $this->gettext('creation_date'));
+        $table->add_header('expiry_date', $this->gettext('expiry_date'));
+        $table->add_header('actions', '');
+
         while ($record = $db->fetch_assoc($result)) {
+           $table->add_row();
+
+           $css_class = array('class' => 'created');
+           if (!!$record['soon_expired']) {
+             $css_class['class'] = 'soon_expired';
+           }
+           if (!!$record['expired']) {
+             $css_class['class'] = 'expired';
+           }
+
+           $table->add(null,       $record['application']);
+           $table->add(null,       $record['created']);
+           $table->add($css_class, $record['expiry']);
+           // TODO: add delete functionality
+           $table->add(null,       'Delete me if you can');
+
+           /*
            $application_passwords[$record['application']] = array(
               'name'         => $record['application'],
               'created'      => $record['created'],
+              'expiry'       => $record['expiry'],
               'expired'      => !!$record['expired'],
               'soon_expired' => !!$record['soon_expired'],
               'active' => true
            );
+           */
         }
 
         $this->api->output->set_env('application_passwords', !empty($application_passwords) ? $application_passwords : null);
@@ -127,9 +151,16 @@ class ourfun extends rcube_plugin
         return $table->show($attrib);
     }
 
+    private function hash_password($password) {
+        // TODO: implement password hashing here
+        return $password;
+    }
+
     public function settings_save()
     {
-        $new_password = $this->random_password();
+        // We need this password for the plugin.new_password hook
+        $this->new_password = $this->random_password();
+        $new_password = $this->hash_password($this->new_password);
         $application  = rcube_utils::get_input_value("new_application_name", rcube_utils::INPUT_POST);
         if (!($this->verify_application_name($application))) {
            // TODO: gettext
@@ -152,8 +183,7 @@ class ourfun extends rcube_plugin
         $application,
         $new_password);
         if ( $db->affected_rows($insert) === 1) {
-           // TODO: gettext
-           $this->api->output->show_message("Your new password is: " . $new_password, 'error');
+           return $this->settings_view();
         }
         else {
            // TODO: gettext
@@ -168,6 +198,7 @@ class ourfun extends rcube_plugin
     public function settings_view()
     {
         $this->register_handler('plugin.settingslist', array($this, 'settings_list'));
+        $this->register_handler('plugin.new_password', array($this, 'show_new_password'));
         $this->register_handler('plugin.apppassadder', array($this, 'settings_apppassadder'));
 
         $this->include_script('ourfun.js');
@@ -176,6 +207,12 @@ class ourfun extends rcube_plugin
         $this->api->output->add_label('save','cancel');
         $this->api->output->set_pagetitle($this->gettext('settingstitle'));
         $this->api->output->send('ourfun.config');
+    }
+
+    public function show_new_password () {
+        if ($this->new_password) {
+           return html::tag('div', array('id'=>'new_password'), $this->new_password);
+        }
     }
 
     public function settings_apppassadder($attrib)
@@ -197,7 +234,6 @@ class ourfun extends rcube_plugin
         $out .= html::tag('form', array(
                     'method' => 'post',
                     'action' => '?_task=settings&_action=plugin.ourfun-save',
-                    // 'action' => '#',
                     'id'     => 'ourfun-prop-' . $method,
                     'class'  => 'propform',
                 ),
@@ -224,7 +260,6 @@ class ourfun extends rcube_plugin
 
     private function random_password()
     {
-        // TODO: implement password hashing
         $length = 64;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]\/*^+%@-';
         $charactersLength = strlen($characters);

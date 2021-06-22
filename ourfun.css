@@ -42,3 +42,13 @@
 .soon_expired {
   background-color: orange;
 }
+
+#new_password {
+  width: 75%;
+  word-break: break-all;
+  text-align: center;
+  font-size: 200%;
+  letter-spacing: 2px;
+  font-family: monospace;
+  cursor: copy;
+}

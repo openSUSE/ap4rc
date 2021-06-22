@@ -30,35 +30,6 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         rcmail.env.application_passwords = {};
     }
 
-    function render() {
-        var table = $('#ourfun-applications tbody');
-        table.html('');
-
-        var rows = 0;
-        $.each(rcmail.env.application_passwords, function(id, props) {
-            if (props.active) {
-                var tr = $('<tr>').addClass(props.method).appendTo(table),
-                    button = $('<a class="button icon delete">').attr({href: '#', rel: id})
-                        .append($('<span class="inner">').text(rcmail.get_label('remove','ourfun')));
-
-                var cell_class = 'created';
-                if (props.soon_expired)
-                {
-                    cell_class = 'soon_expired';
-                }
-                if (props.expired)
-                {
-                    cell_class = 'expired';
-                }
-                $('<td>').addClass('name').text(props.label || props.name).appendTo(tr);
-                $('<td>').addClass(cell_class).text(props.created || '??').appendTo(tr);
-                $('<td>').addClass('actions buttons-cell').append(button).appendTo(tr);
-                rows++;
-            }
-        });
-        table.parent().show();
-    }
-
     $('#ourfun-prop-save-button').on('click', null, function(e) {
         var lock, data, form = $('#ourfun-prop-save'),
             application_name = form.find('input[name="new_application_name"]');
@@ -69,16 +40,22 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
             return false;
         }
 
-       /* TODO: kolab style JS only submit
-        data = form_data(form);
-        lock = rcmail.set_busy(true, 'saving');
-        rcmail.http_post('plugin.ourfun-save', {
-            _method: data.id || method,
-            _data: JSON.stringify(data),
-        }, lock);
-        */
     })
+    function tag_copy_divs() {
+	var copy = document.querySelectorAll("#new_password");
 
-    // render list initially
-    render();
+	for (const copied of copy) {
+	  copied.onclick = function() {
+	    document.execCommand("copy");
+	  };
+	  copied.addEventListener("copy", function(event) {
+	    event.preventDefault();
+	    if (event.clipboardData) {
+	      event.clipboardData.setData("text/plain", copied.textContent);
+	      console.log(event.clipboardData.getData("text"))
+	    };
+	  });
+	};
+    }
+   tag_copy_divs();
 })
