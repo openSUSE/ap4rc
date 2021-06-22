@@ -53,14 +53,15 @@ class ap4rc extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
 
+        $this->application_name_characters = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
+        $this->generated_password_length   = $rcmail->config->get('ap4rc_generated_password_length', 64);
+
         // needs to be in SQL format ....
         // that means units are without the plural "s
         // ap4rc_warning_interval="1 WEEK"
         // ap4rc_expire_interval="2 MONTH"
-        $this->application_name_characters = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
-        $this->generated_password_length   = $rcmail->config->get('ap4rc_generated_password_length', 64);
-        $this->warning_interval            = $rcmail->config->get('ap4rc_warning_interval', "30 SECOND");
-        $this->expire_interval             = $rcmail->config->get('ap4rc_expire_interval',      "3600 SECOND");
+        $this->warning_interval            = $rcmail->config->get('ap4rc_warning_interval', "1 WEEK");
+        $this->expire_interval             = $rcmail->config->get('ap4rc_expire_interval',  "2 MONTH");
 
         if ($rcmail->get_dbh()->db_provider == 'postgres' ) {
           $this->warning_interval = "'" . $this->warning_interval . "'";
