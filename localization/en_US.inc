@@ -1,6 +1,6 @@
 <?php
 
-$labels['settingslist'] = 'Existing Passwords';
+$labels['settingslist'] = 'Application Specific Passwords';
 $labels['settingstitle'] = 'Application Specific Passwords';
 
 $labels['popup_expire_soon'] = 'Some of your application passwords will expire soon.';
