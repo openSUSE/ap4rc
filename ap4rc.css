@@ -60,5 +60,5 @@
 }
 
 #ap4rc-content {
-  overflow: scroll;
+  overflow-y: scroll;
 }
