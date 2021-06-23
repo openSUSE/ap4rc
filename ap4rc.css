@@ -59,7 +59,6 @@
   padding: 1em;
 }
 
-.action-plugin-ap4rc .scroller,
-.action-plugin-ap4rc-save .scroller {
+#ap4rc-content {
   overflow: scroll;
 }
