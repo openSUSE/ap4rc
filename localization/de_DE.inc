@@ -14,7 +14,7 @@ $labels['application'] = 'Anwendung';
 $labels['creation_date'] = 'Erstellt am';
 $labels['expiry_date']   = 'Läuft ab';
 $labels['created'] = 'Erstellt';
-$labels['remove'] = 'Löschen';
+$labels['remove'] = 'Entfernen';
 
 $labels['name_field'] = 'Name:';
 $labels['create_password'] = 'Gerneriere Passwort';
