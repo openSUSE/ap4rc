@@ -59,3 +59,18 @@ password_query = SELECT username,password FROM application_passwords WHERE usern
 ```
 password_query = SELECT username,password FROM application_passwords WHERE username='%u' AND created >= NOW() - INTERVAL 2 MONTH;
 ```
+
+## Expiry of passwords
+
+As Mail protocols are not really supporting nice ways to do MFA, we decided to limit the time to live of passwords.
+If you do not wish to have your passwords expire you can take 2 steps:
+
+1. remove the `AND created ...` part from the Dovecot query
+2. set a very long expiry time in your roundcube config:
+
+```php
+$config['ap4rc_expire_interval'] = "100 YEAR";
+$config['ap4rc_warning_interval'] = "1 YEAR";
+```
+
+That way your passwords will never expire and the webui will not annoy you with popups.
