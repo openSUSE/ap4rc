@@ -277,7 +277,7 @@ class ap4rc extends rcube_plugin
                 html::p(null, rcmail::Q($this->gettext('new_application_description')) . html::br() .
                               rcmail::Q($this->gettext('only_valid_characters')) . " " . html::tag('code', null, $this->application_name_characters ));
         $form_label  = html::label('new_application_name', rcmail::Q($this->gettext('name_field')));
-        $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name', 'size' => '36', 'value' => '', 'placeholder' => 'only use ' . $this->application_name_characters, 'pattern' => "[" . $this->application_name_characters . "]+", 'style' => "margin-right: 1em;"));
+        $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name', 'size' => '36', 'value' => '', 'placeholder' => $this->gettext('only_use') . " " . $this->application_name_characters, 'pattern' => "[" . $this->application_name_characters . "]+", 'style' => "margin-right: 1em;"));
         $form_submit = html::tag('input', array('type' => 'submit', 'id' => 'ap4rc-prop-save-button', 'class' => 'button mainaction save', 'value' => rcmail::Q($this->gettext('create_password'))));
         $form = $legend_description . $form_label . $form_input . $form_submit;
 
