@@ -19,6 +19,7 @@ $labels['remove'] = 'Remove';
 $labels['name_field'] = 'Name:';
 $labels['create_password'] = 'Generate password';
 $labels['new_application_description'] = 'Create one password per application (e.g. "My_Android", "mutt_office", ...).';
+$labels['only_delete_one_password'] = 'The goal is that if you lose a device you only need to delete the password for that device.';
 $labels['only_valid_characters'] = 'You can only use the following characters:';
 
 $labels['new_application_ready']      = 'Your new password is ready for:';
