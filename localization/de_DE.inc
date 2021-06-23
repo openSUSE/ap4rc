@@ -19,6 +19,7 @@ $labels['remove'] = 'Löschen';
 $labels['name_field'] = 'Name:';
 $labels['create_password'] = 'Gerneriere Passwort';
 $labels['new_application_description'] = 'Erstellen Sie ein Passwort für jede Anwendung (e.g. "My_Android", "mutt_office", ...).';
+$labels['only_delete_one_password'] = 'Das Ziel ist, dass Sie bei Verlust eines Geräts, nur das Passwort für dieses Geräts löschen müssen.';
 $labels['only_valid_characters'] = 'Sie können nur die folgenden Zeichen verwenden:';
 
 $labels['new_application_ready'] = 'Ihr neues Passwort ist einsatzbereit für:';
