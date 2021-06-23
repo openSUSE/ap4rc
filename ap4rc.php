@@ -275,6 +275,7 @@ class ap4rc extends rcube_plugin
 
         $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('settingstitle'))) .
                 html::p(null, rcmail::Q($this->gettext('new_application_description')) . html::br() .
+                              rcmail::Q($this->gettext('only_delete_one_password')) . html::br() .
                               rcmail::Q($this->gettext('only_valid_characters')) . " " . html::tag('code', null, $this->application_name_characters ));
         $form_label  = html::label('new_application_name', rcmail::Q($this->gettext('name_field')));
         $form_input  = html::tag('input', array('type' => 'text', 'id' => 'new_application_name', 'name' => 'new_application_name', 'size' => '36', 'value' => '', 'placeholder' => $this->gettext('only_use') . " " . $this->application_name_characters, 'pattern' => "[" . $this->application_name_characters . "]+", 'style' => "margin-right: 1em;"));
