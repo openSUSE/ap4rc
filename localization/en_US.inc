@@ -21,6 +21,8 @@ $labels['create_password'] = 'Generate password';
 $labels['new_application_description'] = 'Create one password per application (e.g. "My_Android", "mutt_office", ...).';
 $labels['only_delete_one_password'] = 'The goal is that if you lose a device, you only need to delete the password for that device.';
 $labels['only_valid_characters'] = 'You can only use the following characters:';
+// this will be used in the placeholder of the input field, eg. "only use a-zA-Z0-9"
+$labels['only_use'] = 'only use';
 
 $labels['new_application_ready']      = 'Your new password is ready for:';
 $labels['new_application_copy']       = 'Click on the password to copy it.';
