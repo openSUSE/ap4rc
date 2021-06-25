@@ -43,7 +43,7 @@
   background-color: var(--warning);
 }
 
-#new_password {
+.ap4rc-copy {
   width: 75%;
   word-break: break-all;
   text-align: center;

@@ -127,7 +127,7 @@ class ap4rc extends rcube_plugin
 
         $table = new html_table(array('cols' => 3));
 
-        $table->add_header('name', $this->gettext('application'));
+        $table->add_header('name', $this->gettext('new_username'));
         // $table->add_header('creation_date', $this->gettext('creation_date'));
         $table->add_header('expiry_date', $this->gettext('expiry_date'));
         $table->add_header('actions', '');
@@ -143,7 +143,7 @@ class ap4rc extends rcube_plugin
              $css_class['class'] = 'expired';
            }
 
-           $table->add(null,       $record['application']);
+           $table->add(null,       $this->application_username($record['application']));
            // $table->add(null,       $record['created']);
            $table->add($css_class, $record['expiry']);
            $delete_link = html::tag('a',
@@ -252,12 +252,23 @@ class ap4rc extends rcube_plugin
 
     public function show_new_password () {
         if ($this->new_password) {
-           return html::tag('div',null,
-             html::p(null, $this->gettext('new_application_ready') .
-             html::span(array('style' => 'font-weight: bold;'), rcmail::Q( " " . $this->new_application)) . html::br() .
-             html::span(array('style' => 'font-weight: bold;'), $this->gettext('new_application_copy')) . html::br() .
-             $this->gettext('new_application_once')) .
-             html::tag('div', array('id'=>'new_password'), $this->new_password) );
+           $important_style = array('style' => 'font-weight: bold;');
+           return html::tag('div', null,
+               html::p($important_style,
+                   $this->gettext('please_use_username') .
+                   html::br() .
+                   $this->gettext('new_application_copy') . " " .
+                   $this->gettext('new_application_once')
+               )
+            ) .
+            html::tag('div',  null,
+               html::tag('dl', null,
+                 html::tag('dt', $important_style, $this->gettext('new_username')) .
+                   html::tag('dd', array('id'=>'new_username', 'class'=>'ap4rc-copy'), $this->application_username($this->new_application)) .
+                 html::tag('dt', $important_style, $this->gettext('new_password')) .
+                   html::tag('dd', array('id'=>'new_password', 'class'=>'ap4rc-copy'), $this->new_password)
+               )
+           );
         }
         if ($this->password_save_error) {
            return html::tag('div', array('id'=>'new_password_error'), $this->password_save_error);
@@ -265,6 +276,11 @@ class ap4rc extends rcube_plugin
         if ($this->password_save_success) {
            $this->api->output->show_message($this->gettext('popup_successful_save'), 'error');
         }
+    }
+
+    private function application_username($appname) {
+        $rcmail = rcmail::get_instance();
+        return $rcmail->get_user_name() . '@' . $appname;
     }
 
     public function settings_apppassadder($attrib)

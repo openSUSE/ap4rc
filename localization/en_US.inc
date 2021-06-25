@@ -25,5 +25,8 @@ $labels['only_valid_characters'] = 'You can only use the following characters:';
 $labels['only_use'] = 'only use';
 
 $labels['new_application_ready']      = 'Your new password is ready for:';
-$labels['new_application_copy']       = 'Click on the password to copy it.';
+$labels['new_application_copy']       = 'You can click on the username and password to copy them.';
 $labels['new_application_once'] = 'This password is only shown once.';
+$labels['please_use_username'] = 'Please use the following username and password for this application.';
+$labels['new_username'] = 'Username';
+$labels['new_password'] = 'Password';

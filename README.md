@@ -44,20 +44,25 @@ Default: `a-zA-Z0-9._+-`
 
 ## Dovecot side of things
 
+### Prequisists
+
+It is important that the auth userformat is `%u` and not just `%n`.
+
+### SQL Query
 The proposed SQL Query configuration
 
 The interval at the end should match the ap4rc_expire_interval to get a consistent behavior.
 
-### PostgreSQL
+#### PostgreSQL
 
 ```
-password_query = SELECT username,password FROM application_passwords WHERE username='%u' AND created >= NOW() - INTERVAL '2 MONTH';
+password_query = SELECT username,password FROM application_passwords WHERE username='%u' AND application='%d' AND created >= NOW() - INTERVAL '2 MONTH';
 ```
 
-### MariaDB/MySQL
+#### MariaDB/MySQL
 
 ```
-password_query = SELECT username,password FROM application_passwords WHERE username='%u' AND created >= NOW() - INTERVAL 2 MONTH;
+password_query = SELECT username,password FROM application_passwords WHERE username='%u' AND application='%d' AND created >= NOW() - INTERVAL 2 MONTH;
 ```
 
 ## Expiry of passwords

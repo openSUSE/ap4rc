@@ -51,7 +51,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     });
 
     function tag_copy_divs() {
-        var copy = document.querySelectorAll("#new_password");
+        var copy = document.querySelectorAll(".ap4rc-copy");
 
         for (const copied of copy) {
             copied.onclick = function() {
