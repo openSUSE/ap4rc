@@ -46,7 +46,7 @@ class ap4rc extends rcube_plugin
         $this->password_save_error = null;
         $this->password_save_success = null;
         $this->application_name_characters = null;
-        $this->generated_password_length = 64;
+        $this->generated_password_length = 32;
         $this->add_hook('startup', array($this, 'startup'));
     }
 
@@ -55,7 +55,7 @@ class ap4rc extends rcube_plugin
         $rcmail = rcmail::get_instance();
 
         $this->application_name_characters     = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
-        $this->generated_password_length       = $rcmail->config->get('ap4rc_generated_password_length', 64);
+        $this->generated_password_length       = $rcmail->config->get('ap4rc_generated_password_length', 32);
         $this->application_password_characters = $rcmail->config->get('application_password_characters', '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-');
 
         // needs to be in SQL format ....

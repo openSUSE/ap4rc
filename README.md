@@ -33,7 +33,7 @@ Default: `1 WEEK`
 
 How long should generated passwords be?
 
-Default: `64`
+Default: `32`
 
 `ap4rc_application_name_characters`
 
