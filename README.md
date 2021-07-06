@@ -41,6 +41,12 @@ Which characters are allowed in an application name.
 
 Default: `a-zA-Z0-9._+-`
 
+`application_password_characters`
+
+Which characters are used to generate passwords.
+
+Default: `0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]\/*^+%@-`
+
 
 ## Dovecot side of things
 

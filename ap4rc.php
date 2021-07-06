@@ -35,6 +35,7 @@ class ap4rc extends rcube_plugin
     private $password_save_success;
     private $password_save_error;
     private $application_name_characters;
+    private $application_password_characters;
     private $generated_password_length;
 
     public function init()
@@ -53,8 +54,9 @@ class ap4rc extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
 
-        $this->application_name_characters = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
-        $this->generated_password_length   = $rcmail->config->get('ap4rc_generated_password_length', 64);
+        $this->application_name_characters     = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
+        $this->generated_password_length       = $rcmail->config->get('ap4rc_generated_password_length', 64);
+        $this->application_password_characters = $rcmail->config->get('application_password_characters', '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]\/*^+%@-');
 
         // needs to be in SQL format ....
         // that means units are without the plural "s
@@ -331,7 +333,7 @@ class ap4rc extends rcube_plugin
 
     private function random_password()
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]\/*^+%@-';
+        $characters = $this->application_password_characters;
         $charactersLength = strlen($characters);
         $randomString = '';
         for ($i = 0; $i < $this->generated_password_length; $i++) {
