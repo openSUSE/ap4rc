@@ -56,7 +56,7 @@ class ap4rc extends rcube_plugin
 
         $this->application_name_characters     = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
         $this->generated_password_length       = $rcmail->config->get('ap4rc_generated_password_length', 64);
-        $this->application_password_characters = $rcmail->config->get('application_password_characters', '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]\/*^+%@-');
+        $this->application_password_characters = $rcmail->config->get('application_password_characters', '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-');
 
         // needs to be in SQL format ....
         // that means units are without the plural "s
