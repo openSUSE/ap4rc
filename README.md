@@ -1,6 +1,27 @@
-# Application Passwords for roundcube
+# Application Passwords Plugin for Roundcube webmail
 
-Heavily inspired by the code from kolab's 2FA plugin
+Setting up Multi-Factor authentication (MFA) is an important step to secure your
+Account. But you may run into issues if you use applications or older devices
+that don't support Multi-Factory authentication (yet).
+
+Application passwords provide temporary help here: an application password is a
+long, randomly generated password that you provide only once instead of your
+regular Multi-Factory authentication when signing in to an app or device that
+doesn't support the new MFA verification.
+
+This Roundcube plugin allows the creation of application passwords, together
+with specific application-user-names. This makes it easy to identify the app or
+device, which is using this kind of credentials to log-in to your service. In case 
+a device get's lost or stolen, it's enough to remove just the generated authentication 
+data for this single device.
+
+The plugin allows to enter a specific application-user-name and generates 
+a random password for this specific login. Once generated, users can just click 
+on the password string to get it copied to the clipboard of a device. A user 
+now just has to reconfigure the Email application to use the specific 
+application-user-name and the generated password. 
+
+This plugin was heavily inspired by the code from kolab's 2FA plugin.
 
 
 ## Installation
