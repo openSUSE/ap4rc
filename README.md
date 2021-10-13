@@ -71,7 +71,7 @@ NOTE: You are welcome to contribute with other database drivers.
 Copy `config.inc.php.dist` to `config.inc.php` and modify it as necessary.
 Alternatively, you can also include changed settings in the main Roundcube configuration file `config/config.inc.php`.
 
-Don't forget to enable the lastlogin plugin within the main Roundcube configuration file `config/config.inc.php`.
+Don't forget to enable the ap4rc plugin within the main Roundcube configuration file `config/config.inc.php`.
 
 
 ## Settings:
