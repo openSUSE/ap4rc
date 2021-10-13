@@ -1,0 +1,37 @@
+{
+    "name": "openSUSE/ap4rc",
+    "type": "roundcube-plugin",
+    "description": "Roundcube plugin to generate and save application specific passwords",
+    "keywords": ["mail","application","password"],
+    "homepage": "https://github.com/openSUSE/ap4rc",
+    "license": "AGPL-3.0 License",
+    "version": "0.0.1",
+    "authors": [
+        {
+            "name": "darix",
+            "email": "",
+            "homepage": "https://github.com/darix"
+        },
+		{
+			"name": "J. Daniel Schmidt",
+			"email": "",
+			"homepage": "http://jdsn.de"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "roundcube/plugin-installer": "~0.2.0"
+    },
+    "extra": {
+        "roundcube": {
+            "min-version": "1.0",
+            "sql-dir": "SQL"
+        }
+    }
+}

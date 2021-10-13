@@ -1,0 +1,16 @@
+<?php
+/**
+ * ap4rc  configuration file
+ */
+
+// When should an application password expire (Default: "2 MONTH")?
+$config['ap4rc_expire_interval'] = "2 MONTH";
+
+// When should the WebUI warn about expiring passwords (Default: "1 WEEK")?
+$config['ap4rc_warning_interval'] = "1 WEEK";
+
+// How long should generated passwords be (Default: 64)?
+$config['ap4rc_generated_password_length'] = 64;
+
+// Which characters are allowed in an application name (Default: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-)?
+$config['application_password_characters'] = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-)?';
