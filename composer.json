@@ -1,5 +1,5 @@
 {
-    "name": "ap4rc",
+    "name": "openSUSE/ap4rc",
     "type": "roundcube-plugin",
     "description": "Roundcube plugin to generate and save application specific passwords",
     "keywords": ["mail","application","password"],

@@ -40,6 +40,7 @@ class ap4rc extends rcube_plugin
 
     public function init()
     {
+        $this->load_config('config.inc.php.dist');
         $this->load_config();
         $this->new_password = null;
         $this->new_application = null;

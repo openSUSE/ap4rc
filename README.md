@@ -2,8 +2,56 @@
 
 Heavily inspired by the code from kolab's 2FA plugin
 
-## Settings:
 
+## Installation
+
+#### Install with composer
+
+Add the plugin to your `composer.json` file:
+
+    "require": {
+        (...)
+        "openSUSE/ap4rc": "*"
+    }
+
+Run:
+
+    $ composer update [--your-options]`
+
+#### Manual installation
+
+Place this directory under your Rouncdube `plugins/` folder.
+
+Then, you need to import the database script:
+
+##### MySQL/MariaDB
+```
+mysql -your_mysql_connection_options your_roundcube_database_name < SQL/ap4rc.mysql.sql
+```
+
+##### PostgreSQL
+```
+psql -your_postgresql_connection_options your_roundcube_databas_name < SQL/ap4rc.pgsql.sql
+```
+
+##### SQLite
+Log in to your sqliteDB and read the file:
+```
+sqlite> .read SQL/ap4rc.sqlite.sql
+```
+
+NOTE: You are welcome to contribute with other database drivers.
+
+
+### Configure and enable the plugin
+
+Copy `config.inc.php.dist` to `config.inc.php` and modify it as necessary.
+Alternatively, you can also include changed settings in the main Roundcube configuration file `config/config.inc.php`.
+
+Don't forget to enable the lastlogin plugin within the main Roundcube configuration file `config/config.inc.php`.
+
+
+## Settings:
 
 ### Intervals
 
