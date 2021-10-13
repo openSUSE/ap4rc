@@ -21,6 +21,8 @@ on the password string to get it copied to the clipboard of a device. A user
 now just has to reconfigure the Email application to use the specific 
 application-user-name and the generated password. 
 
+![ap4rc plugin screenshot](img/ap4rc.png)
+
 This plugin was heavily inspired by the code from kolab's 2FA plugin.
 
 
