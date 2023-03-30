@@ -1,5 +1,5 @@
 {
-    "name": "openSUSE/ap4rc",
+    "name": "opensuse/ap4rc",
     "type": "roundcube-plugin",
     "description": "Roundcube plugin to generate and save application specific passwords",
     "keywords": ["mail","application","password"],
@@ -9,12 +9,10 @@
     "authors": [
         {
             "name": "darix",
-            "email": "",
             "homepage": "https://github.com/darix"
         },
 		{
 			"name": "J. Daniel Schmidt",
-			"email": "",
 			"homepage": "http://jdsn.de"
         }
     ],
