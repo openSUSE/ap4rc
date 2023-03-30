@@ -246,7 +246,7 @@ class ap4rc extends rcube_plugin
         $this->register_handler('plugin.apppassadder', array($this, 'settings_apppassadder'));
 
         $this->include_script('js/ap4rc.js');
-        $this->include_stylesheet($this->local_skin_path() . '/css/ap4rc.css');
+        $this->include_stylesheet('css/ap4rc.css');
 
         $this->api->output->add_label('save','cancel');
         $this->api->output->set_pagetitle($this->gettext('settingstitle'));
