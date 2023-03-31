@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS `application_passwords` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_applications` (`username`,`application`),
   KEY `speedup_dovecot_index` (`username`,`created`,`password`)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=INNODB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
