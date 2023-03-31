@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS application_passwords (
   username    VARCHAR(128) NOT NULL,
   password    VARCHAR(255) NOT NULL,
   created     TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  user_id     integer DEFAULT NULL
+    REFERENCES users (user_id) ON DELETE CASCADE,
   PRIMARY KEY (id),
   UNIQUE (username,application)
 );

@@ -202,13 +202,16 @@ class ap4rc extends rcube_plugin
               (
                 `username`,
                 `application`,
-                `password`
+                `password`,
+                `user_id`
               )
-              VALUES (?,?,?)
+              VALUES (?,?,?,?)
         ",
         $rcmail->get_user_name(),
         $application,
-        $hashed_password);
+        $hashed_password,
+        $rcmail->get_user_id()
+        );
 
         // This code will only be reached if we did not see a duplicate entry exception
         if ($result && $db->affected_rows($result) > 0) {
