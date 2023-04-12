@@ -2,17 +2,17 @@
 
 Setting up Multi-Factor authentication (MFA) is an important step to secure your
 Account. But you may run into issues if you use applications or older devices
-that don't support Multi-Factory authentication (yet).
+that don't support Multi-Factor authentication (yet).
 
 Application passwords provide temporary help here: an application password is a
 long, randomly generated password that you provide only once instead of your
-regular Multi-Factory authentication when signing in to an app or device that
+regular Multi-Factor authentication when signing in to an app or device that
 doesn't support the new MFA verification.
 
 This Roundcube plugin allows the creation of application passwords, together
 with specific application-user-names. This makes it easy to identify the app or
 device, which is using this kind of credentials to log-in to your service. In case 
-a device get's lost or stolen, it's enough to remove just the generated authentication 
+a device gets lost or stolen, it's enough to remove just the generated authentication 
 data for this single device.
 
 The plugin allows to enter a specific application-user-name and generates 
@@ -34,7 +34,7 @@ Add the plugin to your `composer.json` file:
 
     "require": {
         (...)
-        "openSUSE/ap4rc": "*"
+        "opensuse/ap4rc": "*"
     }
 
 Run:
@@ -49,22 +49,24 @@ Then, you need to import the database script:
 
 ##### MySQL/MariaDB
 ```
-mysql -your_mysql_connection_options your_roundcube_database_name < SQL/ap4rc.mysql.sql
+mysql -your_mysql_connection_options your_roundcube_database_name < SQL/mysql.initial.sql
 ```
 
 ##### PostgreSQL
 ```
-psql -your_postgresql_connection_options your_roundcube_databas_name < SQL/ap4rc.pgsql.sql
+psql -your_postgresql_connection_options your_roundcube_database_name < SQL/postgres.initial.sql
 ```
 
 ##### SQLite
 Log in to your sqliteDB and read the file:
 ```
-sqlite> .read SQL/ap4rc.sqlite.sql
+sqlite> .read SQL/sqlite.initial.sql
 ```
 
 NOTE: You are welcome to contribute with other database drivers.
 
+If you are upgrading from a previous version of this plugin, also look in ./SQL/(database_driver)/ to apply
+any schema changes.
 
 ### Configure and enable the plugin
 
@@ -88,7 +90,7 @@ $config['ap4rc_warning_interval'] = "1 WEEK";
 
 `ap4rc_expire_interval`
 
-How long an application password should be valid
+How long an application password should be valid.
 Default: `2 MONTH`
 
 `ap4rc_warning_interval`
@@ -97,6 +99,20 @@ The interval before the expiry date is reached that the roundcube webui
 will warn you about expiring password:
 
 Default: `1 WEEK`
+
+`ap4rc_username_format`
+
+Username format to use:
+
+ *  `1` "username@application"
+ *  `2` "username" / user@example.com (use same username everywhere)"
+ *  `3` "user-0003@example.com"
+ *  `4` "AB0008@example.com"
+
+Dovecot needs to be configured to use the chosen username format.
+
+Default: 1
+
 
 ### Other settings
 
@@ -119,7 +135,24 @@ Which characters are used to generate passwords.
 Default: `0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-`
 
 
+`ap4rc_show_application`
+
+Always hide/show application name column? (true/false)
+
+Default: auto - show only if configured username format does not contain application name.
+
+`ap4rc_aid_pad`
+
+If using options 3 or 4 for `ap4rc_username_format`, pad to this many digits
+e.g. 4 = "8 -> 0008". If you have lots of users / frequent password expiry, then 
+you may require more digits for format 3.
+
+Default: 4
+
+
 ## Dovecot side of things
+
+See [README_DOVECOT](README_DOVECOT.md) for more configuration examples and details.
 
 ### Prequisists
 
@@ -128,7 +161,7 @@ It is important that the auth userformat is `%u` and not just `%n`.
 ### SQL Query
 The proposed SQL Query configuration
 
-The interval at the end should match the ap4rc_expire_interval to get a consistent behavior.
+The interval at the end should match the `ap4rc_expire_interval` to get a consistent behavior.
 
 #### PostgreSQL
 
@@ -172,4 +205,3 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
-
