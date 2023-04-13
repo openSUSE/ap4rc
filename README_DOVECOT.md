@@ -1,9 +1,16 @@
 # Dovecot Configuration Examples
 
-The following examples are provided for MySQL + Dovecot 2.3.20.
+The following examples are provided for MySQL + Dovecot **2.3.20**
 
 You may need to adapt them if you are using different database engine (postgres/sqlite).
 
+## Dovecot supported features
+
+Some features / variables used require minimum versions of Dovecot:
+
+- At least 2.2.33 required for "`%{if;`" conditionals
+- At least 2.2.30 required for `username_filter`
+- For versions <2.3.14, use `%{real_lport}` / `%{real_rip}` instead of `%{real_local_port} / %{real_remote_ip}`
 
 ## Dovecot configuration
 
@@ -13,7 +20,7 @@ There are several examples shipped with dovecot:
 
 `./conf.d/auth-sql.conf.ext` - Example authentication config using SQL query.
 
-`./dovecot-dict-sql.conf.ext` - Example dict config for SQL. This is where the SQL query and other database config goes, and tells dovecot how to find the relevant fields from the table and return various values. (referenced from within the auth-* files above )
+`./dovecot-dict-sql.conf.ext` - Example dict config for SQL. This is where the SQL query and other database config goes, and tells dovecot how to find the relevant fields from the table and return various values. (referenced from within the `auth-*` files above).
 
 
 Authentication configs are usually included from `./conf.d/10-auth.conf`.
@@ -29,17 +36,34 @@ Authentication configs are usually included from `./conf.d/10-auth.conf`.
 #!include auth-passwdfile.conf.ext
 ```
 
-Alternatively, add the relevant `passdb` / `userdb` sections (examples below) to your existing `auth-` config.
+**Alternatively, add the relevant `passdb` / `userdb` sections (examples below) to your existing `auth-` config.**
 
 2. Make a copy of `dovecot-dict-sql.conf.ext` to a new file, e.g. `dovecot-sql-ap4rc.conf.ext`
 
 After changing the configuration, run `doveadm reload`
 
-**ALWAYS TEST** the configuration does what you expect!
+## WARNING!
 
-Dovecot's authentication config can get awkward when using multiple passdbs.
-It's possible to accidentally configure, for example, a passdb that allows ANY password, or for dovecot to
-accept mail for non-existent users.
+> **ALWAYS TEST** the configuration does what you expect!
+
+Dovecot is amazing, but its authentication config can get awkward and somewhat **hard to understand** when using multiple passdbs.
+
+It is possible to accidentally configure, for example, a passdb that allows ANY password, or for dovecot to
+accept mail for non-existent users. It's important to test wrong passwords, valid/invalid usernames, blank passwords etc.
+
+Dovecot's authentication documentation is scattered over many pages, lacks explanation in places, and there are few _good_ 
+example configurations. Some of the examples (in the Dovecot docs or elsewhere) are incomplete or wrong.
+
+> This document provides useful examples, but we cannot provide for every possible configuration and environment. You need to **ADAPT THESE EXAMPLES** for your particular requirements. Please DO NOT just copy+paste these examples without thought and expect it to work!
+
+If unsure, refer to the Dovecot documentation:
+
+- [Password databases (passdb)](https://doc.dovecot.org/configuration_manual/authentication/password_databases_passdb) / [Password database extra fields](https://doc.dovecot.org/configuration_manual/authentication/password_database_extra_fields)
+- [User databases (userdb)](https://doc.dovecot.org/configuration_manual/authentication/user_databases_userdb) / [User database extra fields](https://doc.dovecot.org/configuration_manual/authentication/user_database_extra_fields)
+- [Multiple authentication databases](https://doc.dovecot.org/configuration_manual/authentication/multiple_authentication_databases)
+
+> **The order in which passdb / userdb entries appear in the configuration is significant!** 
+
 
 ## Username formats
 
@@ -80,15 +104,9 @@ userdb {
 You can also use the 'prefetch' method suggested in the example if your SQL query returns
 all the required `userdb_` fields. See [Dovecot Prefetch Userdb](https://doc.dovecot.org/configuration_manual/authentication/prefetch_userdb/)
 
-Also see the examples below for suggestions on how to prevent roundcube passwords being used from other devices,
-and prevent application-specific passwords being used to login from roundcube. You should have Two-factor 
-authentication enabled using one of the available Two-factor authentication plugins. Not all of these plugins
-have the ability to enforce 2fa, or to prevent the user disabling 2fa.
-
 ### SQL Dict Config 
 
 `dovecot-sql-ap4rc.conf.ext`
-
 
 ```
 driver = mysql
@@ -103,9 +121,7 @@ password_query = SELECT username,password \
 
 ```
 
-If your dovecot usernames are email addresses, Dovecot (as of v2.2.6) supports the variables 
-`%{domain_first}` and `%{domain_last}`:
-
+If your dovecot usernames are email addresses, Dovecot (as of v2.2.6) supports the variables `%{domain_first}` and `%{domain_last}`:
 
 ```
 password_query = SELECT username,password \
@@ -292,10 +308,6 @@ passdb {
 # Roundcube connects to ports 5993 (imap) and 5465 (submission)
 # Webmail users must use 2FA. Reject application-specific password
 # if being used via webmail (port > 5000). Otherwise accept.
-# Note: Dovecot supported features:
-#       At least 2.2.33 required for "%{if;" conditionals.
-#       At least 2.2.30 required for username_filter
-#       For <2.3.14, use "%{real_lport} / %{real_rip}"
 
 # ap4rc format 2
 passdb {
@@ -484,7 +496,7 @@ password_query = \
 
 ## Preventing users from using roundcube password with IMAP
 
-When implementing, it is recommended for users to change their existing password for good measure.
+When implementing, it is recommended users change their existing password for good measure.
 
 Once you have verified the config is working correctly with both existing and application 
 specific passwords and have rolled out application specific passwords to any existing users, 
@@ -572,8 +584,7 @@ Roundcube has its own built-in brute-force rate limit: `login_rate_limit`. This 
 Roundcube (at least 1.6.1) does not prevent someone trying lots of different/random usernames and passwords. The login process
 seems slow enough to make large-scale brute-force attacks fairly unfeasible. You may want to make it more difficult for
 potential attackers to exploit roundcube's differing failed login behaviour to determine if a user exists or not. (Or just
-to stop many failed login attempts from wasting resources and cluttering your logs.)
+to stop many failed login attempts from locking out users / wasting resources and cluttering your logs.)
 
-Dovecot's has its own [Authentication penalty support](https://doc.dovecot.org/configuration_manual/authentication/auth_penalty) and there is
-a [Dovecot Authentication penalty plugin](https://packagist.org/packages/takerukoushirou/roundcube-dovecot_client_ip) for roundcube.
+Dovecot has its own [Authentication penalty support](https://doc.dovecot.org/configuration_manual/authentication/auth_penalty) and there is a [Dovecot Authentication penalty plugin](https://packagist.org/packages/takerukoushirou/roundcube-dovecot_client_ip) for roundcube.
 
