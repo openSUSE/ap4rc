@@ -239,12 +239,12 @@ class ap4rc extends rcube_plugin
         $rcmail->get_user_name(),
         $application,
         $hashed_password,
-	$rcmail->get_user_id()
-	);
+        $rcmail->get_user_id()
+  );
 
-        // This code will only be reached if we did not see a duplicate entry exception
-	if ($result && $db->affected_rows($result) > 0) {
-	  $this->new_id = $db->insert_id();
+    // This code will only be reached if we did not see a duplicate entry exception
+    if ($result && $db->affected_rows($result) > 0) {
+    $this->new_id = $db->insert_id();
           $this->new_password = $new_password;
           $this->new_application = $application;
           $this->password_save_error = null;
@@ -316,33 +316,31 @@ class ap4rc extends rcube_plugin
 
     private function application_username($appname, $appid) {
 
-	    $rcmail = rcmail::get_instance();
-	    $username = $rcmail->get_user_name();
+      $rcmail = rcmail::get_instance();
+      $username = $rcmail->get_user_name();
 
-	    switch ($this->username_format) {
+      switch ($this->username_format) {
 
-              case 2:
-               return $username;
+        case 2:
+          return $username;
 
-	      case 3:
-               return strstr($username, '@',true) . '-' . str_pad($appid, $this->aid_pad, '0', STR_PAD_LEFT) . strstr($username, '@');
+        case 3:
+          return strstr($username, '@',true) . '-' . str_pad($appid, $this->aid_pad, '0', STR_PAD_LEFT) . strstr($username, '@');
 
-              case 4:
-               return strtoupper(substr($username, 0, 2)) . str_pad($appid, $this->aid_pad, '0', STR_PAD_LEFT) . strstr($username, '@');
-		      
-              default:
-		return $username . '@' . $appname;
-
-	    }
-
+        case 4:
+          return strtoupper(substr($username, 0, 2)) . str_pad($appid, $this->aid_pad, '0', STR_PAD_LEFT) . strstr($username, '@');
+          
+        default:
+          return $username . '@' . $appname;
+      }
     }
 
     public function settings_apppassadder($attrib)
     {
         $rcmail = rcmail::get_instance();
         $method = "save";
-	$attrib['id'] = 'ap4rc-add';
-	$out = '';
+        $attrib['id'] = 'ap4rc-add';
+        $out = '';
 
         $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('settingstitle'))) .
                 html::p(null, rcmail::Q($this->gettext('new_application_description')) . html::br() .
