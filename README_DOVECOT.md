@@ -539,10 +539,13 @@ passdb {
 You may also want to look at disabling roundcube's `auto_create_user` option, to prevent "incorrect" accounts from 
 being able to access it. You will have to create roundcube users yourself by adding them to the `users` table, and
 maybe invent a tool to do that. Also note: If a user is deleted from roundcube's `users` table, the corresponding
-entries will also be removed from the `application_passwords table`.
+user's entries are also removed from the `application_passwords table`.
 
-**If a user is deleted from IMAP but not `application_passwords`** access will still be possible via application passwords.
-(Though if expiry is enabled, application passwords will eventually expire.)
+**If a user is deleted from IMAP but not `application_passwords`** access will still be possible via 
+application passwords. If expiry is enabled, application passwords will eventually expire.
+You may want to implement a periodic check, or even a dovecot post-login script to remove entries from
+application_passwords where the primary user no longer exists. (Or ensure your script/process for deleting
+users also includes removing application_passwords entries.)
 
 **If your usernames are the same** one method is shown in the example 2 above. For your EXISTING `passdb` config, add something like:
 
