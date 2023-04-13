@@ -15,10 +15,6 @@ $config['ap4rc_generated_password_length'] = 64;
 // Which characters are allowed in an application name (Default: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-)?
 $config['application_password_characters'] = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-)?';
 
-// Show separate application column in settings (Default: false)?
-// (Enable if username format doesn't include application name)
-$config['ap4rc_show_application'] = false;
-
 // Username format: 
 // - 1 = "username@application" (Default) 
 //        -- Dovecot is configured to select by username where "domain" is the application.
