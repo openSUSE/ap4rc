@@ -30,10 +30,17 @@ class ap4rc extends rcube_plugin
 
     private $expire_interval;
     private $warning_interval;
+    private $new_id;
     private $new_password;
     private $new_application;
     private $password_save_success;
     private $password_save_error;
+    private $aid_pad;
+    private $user_lookup_field;
+    private $user_lookup_data;
+    private $strict_userid_lookup;
+    private $username_format;
+    private $show_application;
     private $application_name_characters;
     private $application_password_characters;
     private $generated_password_length;
@@ -55,9 +62,27 @@ class ap4rc extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
 
+        $this->aid_pad                         = $rcmail->config->get('ap4rc_aid_pad', 4);
+        $this->username_format                 = $rcmail->config->get('ap4rc_username_format', 1);
+        $this->show_application                = $rcmail->config->get('ap4rc_show_application', 'auto');
+        $this->strict_userid_lookup            = $rcmail->config->get('ap4rc_strict_userid_lookup', false);
         $this->application_name_characters     = $rcmail->config->get('ap4rc_application_name_characters', "a-zA-Z0-9._+-");
         $this->generated_password_length       = $rcmail->config->get('ap4rc_generated_password_length', 64);
         $this->application_password_characters = $rcmail->config->get('application_password_characters', '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-');
+
+        // Show application column if username format doesn't contain it:
+        if ($this->show_application == 'auto' && $this->username_format > 1) {
+          $this->show_application = 'true';
+        }
+
+        if ($this->strict_userid_lookup) {
+          $this->user_lookup_data = $rcmail->get_user_id();
+          $this->user_lookup_field = 'user_id';
+        } else {
+          $this->user_lookup_data = $rcmail->get_user_name();
+          $this->user_lookup_field = 'username';
+        }
+
 
         // needs to be in SQL format ....
         // that means units are without the plural "s
@@ -96,10 +121,10 @@ class ap4rc extends rcube_plugin
               (COUNT(*) > 0) AS has_soon_expiring_passwords
             FROM $db_table
             WHERE
-              `username` = ? AND
+              `$this->user_lookup_field` = ? AND
               (`created` < NOW() - INTERVAL $this->expire_interval + INTERVAL $this->warning_interval )
 ",
-        $rcmail->get_user_name());
+        $this->user_lookup_data );
         $record = $db->fetch_assoc($result);
         return (!!$record['has_soon_expiring_passwords']);
     }
@@ -108,9 +133,12 @@ class ap4rc extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
         $application_passwords = array();
+        $cols = 3;
+        $cols = $this->show_application ? ($cols +1) : $cols;
 
         $db       = $rcmail->get_dbh();
         $db_table = $db->table_name('application_passwords', true);
+
         $result = $db->query( "
           SELECT
               `id`,
@@ -121,17 +149,17 @@ class ap4rc extends rcube_plugin
               (`created` < NOW() - INTERVAL $this->expire_interval) AS `expired`
             FROM $db_table
             WHERE
-              `username` = ?
+              `$this->user_lookup_field` = ?
             ORDER BY
               `created`
 ",
-        $rcmail->get_user_name());
+        $this->user_lookup_data );
         $attrib['id'] = 'ap4rc-applications';
 
-        $table = new html_table(array('cols' => 3));
+        $table = new html_table(array('cols' => $cols));
 
         $table->add_header('name', $this->gettext('new_username'));
-        // $table->add_header('creation_date', $this->gettext('creation_date'));
+        if ($this->show_application) { $table->add_header('application', $this->gettext('application')); }
         $table->add_header('expiry_date', $this->gettext('expiry_date'));
         $table->add_header('actions', '');
 
@@ -146,9 +174,10 @@ class ap4rc extends rcube_plugin
              $css_class['class'] = 'expired';
            }
 
-           $table->add(null,       $this->application_username($record['application']));
-           // $table->add(null,       $record['created']);
+           $table->add(null,       $this->application_username($record['application'], $record['id']));
+           if ($this->show_application) { $table->add(null,       $record['application']); }
            $table->add($css_class, $record['expiry']);
+
            $delete_link = html::tag('a',
              array(
                'class' => 'button icon delete',
@@ -210,11 +239,12 @@ class ap4rc extends rcube_plugin
         $rcmail->get_user_name(),
         $application,
         $hashed_password,
-        $rcmail->get_user_id()
-        );
+	$rcmail->get_user_id()
+	);
 
         // This code will only be reached if we did not see a duplicate entry exception
-        if ($result && $db->affected_rows($result) > 0) {
+	if ($result && $db->affected_rows($result) > 0) {
+	  $this->new_id = $db->insert_id();
           $this->new_password = $new_password;
           $this->new_application = $application;
           $this->password_save_error = null;
@@ -249,7 +279,7 @@ class ap4rc extends rcube_plugin
         $this->register_handler('plugin.apppassadder', array($this, 'settings_apppassadder'));
 
         $this->include_script('js/ap4rc.js');
-        $this->include_stylesheet('css/ap4rc.css');
+        $this->include_stylesheet($this->local_skin_path() . '/css/ap4rc.css');
 
         $this->api->output->add_label('save','cancel');
         $this->api->output->set_pagetitle($this->gettext('settingstitle'));
@@ -270,7 +300,7 @@ class ap4rc extends rcube_plugin
             html::tag('div',  null,
                html::tag('dl', null,
                  html::tag('dt', $important_style, $this->gettext('new_username')) .
-                   html::tag('dd', array('id'=>'new_username', 'class'=>'ap4rc-copy'), $this->application_username($this->new_application)) .
+                   html::tag('dd', array('id'=>'new_username', 'class'=>'ap4rc-copy'), $this->application_username($this->new_application, $this->new_id)) .
                  html::tag('dt', $important_style, $this->gettext('new_password')) .
                    html::tag('dd', array('id'=>'new_password', 'class'=>'ap4rc-copy'), $this->new_password)
                )
@@ -284,16 +314,35 @@ class ap4rc extends rcube_plugin
         }
     }
 
-    private function application_username($appname) {
-        $rcmail = rcmail::get_instance();
-        return $rcmail->get_user_name() . '@' . $appname;
+    private function application_username($appname, $appid) {
+
+	    $rcmail = rcmail::get_instance();
+	    $username = $rcmail->get_user_name();
+
+	    switch ($this->username_format) {
+
+              case 2:
+               return $username;
+
+	      case 3:
+               return strstr($username, '@',true) . '-' . str_pad($appid, $this->aid_pad, '0', STR_PAD_LEFT) . strstr($username, '@');
+
+              case 4:
+               return strtoupper(substr($username, 0, 2)) . str_pad($appid, $this->aid_pad, '0', STR_PAD_LEFT) . strstr($username, '@');
+		      
+              default:
+		return $username . '@' . $appname;
+
+	    }
+
     }
 
     public function settings_apppassadder($attrib)
     {
         $rcmail = rcmail::get_instance();
         $method = "save";
-        $attrib['id'] = 'ap4rc-add';
+	$attrib['id'] = 'ap4rc-add';
+	$out = '';
 
         $legend_description = html::tag('legend', null, rcmail::Q($this->gettext('settingstitle'))) .
                 html::p(null, rcmail::Q($this->gettext('new_application_description')) . html::br() .

@@ -14,3 +14,38 @@ $config['ap4rc_generated_password_length'] = 64;
 
 // Which characters are allowed in an application name (Default: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-)?
 $config['application_password_characters'] = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}[]/*^+%@-)?';
+
+// Show separate application column in settings (Default: false)?
+// (Enable if username format doesn't include application name)
+$config['ap4rc_show_application'] = false;
+
+// Username format: 
+// - 1 = "username@application" (Default) 
+//        -- Dovecot is configured to select by username where "domain" is the application.
+// - 2 = "username" / user@example.com (use same username everywhere)
+//        -- Dovecot is configured to select by username and password.
+// - 3 = "user-0003@example.com"
+//        -- Dovecot is configured to select by id (last N chars) and domain
+// - 4 = "AB0008@example.com"  (id is all but first two chars of username)
+//        -- Dovecot is configured to select by id from all but FIRST 2 chars.
+//        -- (So, "AB8@example.com" and "AB000008@example.com" lookup the same id)
+$config['ap4rc_username_format'] = 1;
+
+// If using options 3 or 4 for ap4rc_username_format, pad to this many digits:
+// Default: 4 e.g.  "8 -> 0008". If you have lots of users / frequent password
+// expiry, then you may require more digits for format 3.
+$config['ap4rc_aid_pad'] = 4;
+
+// Always hide/show application name column? (true/false)
+// (Default: auto - show only if username format does not contain application name.)
+// $config['ap4rc_show_application'] = false;
+
+// Use strict user_id lookup?
+// (Default: false - assume usernames are unique)
+// Roundcube's users table has separate columns for username and mail_host.
+// username is not guaranteed to be unique in multi-host/domain setups.
+// Setting this to true will lookup application_passwords only for the logged in user_id.
+// Setting this to false will lookup application_passwords by username. (Assume username: "john", mail_host: "localhost"
+// is the same user as: username: "john" mail_host: "mail.example.com")
+// New installs recommended to set this to true.
+$config['ap4rc_strict_userid_lookup'] = false;
