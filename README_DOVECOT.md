@@ -421,6 +421,10 @@ userdb {
 `dovecot-sql-ap4rc-f3.conf.ext`
 
 ```
+driver = mysql
+connect = host=localhost dbname=<your_database_name> user=<your_database_user> password=<your_database_password>
+default_pass_scheme = SHA512
+
 # ap4rc format 3: "user-0004@example.com"
 
 # ID is always last 4 chars of username:
@@ -464,6 +468,10 @@ passdb {
 `dovecot-sql-ap4rc.conf.ext`
 
 ```
+driver = mysql
+connect = host=localhost dbname=<your_database_name> user=<your_database_user> password=<your_database_password>
+default_pass_scheme = SHA512
+
 # ap4rc format 4: "AB0008@example.com"
 # id is all but first two chars of username.
 # 'username' must return the correct username.
@@ -476,13 +484,13 @@ password_query = \
 
 ## Preventing users from using roundcube password with IMAP
 
+When implementing, it is recommended for users to change their existing password for good measure.
+
 Once you have verified the config is working correctly with both existing and application 
 specific passwords and have rolled out application specific passwords to any existing users, 
 you will want to restrict use of the original password to roundcube only. (You have 
 presumably enabled roundcube 2fa, so we want to make sure this password cannot be 
 used without 2fa.)
-
-It is recommended to change this password anyway for good measure.
 
 There are various methods to do this, depending on your existing dovecot authentication setup and username format.
 
@@ -518,9 +526,9 @@ passdb {
 
 You may also want to look at disabling roundcube's `auto_create_user` option, to prevent "incorrect" accounts from 
 being able to access it. You will have to create roundcube users yourself by adding them to the `users` table, and
-maybe invent a tool to do that.
+maybe invent a tool to do that. Also note
 
-If your usernames are the same, One method is shown in the example 2 above. For your EXISTING `passdb` config, add something like:
+**If your usernames are the same** one method is shown in the example 2 above. For your EXISTING `passdb` config, add something like:
 
 `override_fields = allow_real_nets=192.168.10.1,2001:DB8:10:1a4::1`
 
@@ -556,6 +564,8 @@ The solution (once you've finished debugging) is either to set `auth_verbose = n
 If you used the suggested ports for roundcube (5993 and 5465), even if fail2ban is triggered by a user repeatedly failing to login,
 this will only block access via the standard ports (110,995,143,993,587,465). fail2ban will not block 5993/5465. (This is probably a good
 thing: If the IP of the roundcube host is blocked, nobody will be able to access via roundcube!)
+
+You may also want to add roundcube's IP addresses to dovecot's `login_trusted_networks` (usually `10-master.conf`).
 
 Roundcube has its own built-in brute-force rate limit: `login_rate_limit`. This rate limit only applies for failed login attempts for _existing_ users in its database.
 

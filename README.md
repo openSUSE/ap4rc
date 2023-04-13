@@ -139,7 +139,7 @@ Default: `0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?(){}
 
 Always hide/show application name column? (true/false)
 
-Default: auto - show only if configured username format does not contain application name.
+Default: `auto` - show only if configured username format does not contain application name.
 
 `ap4rc_aid_pad`
 
