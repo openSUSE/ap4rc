@@ -2,7 +2,7 @@
 
 Setting up Multi-Factor authentication (MFA) is an important step to secure your
 Account. But you may run into issues if you use applications or older devices
-that don't support Multi-Factor authentication (yet).
+that don't support Multi-Factor authentication or OAuth 2 (yet).
 
 Application passwords provide temporary help here: an application password is a
 long, randomly generated password that you provide only once instead of your
@@ -111,7 +111,7 @@ Username format to use:
 
 Dovecot needs to be configured to use the chosen username format.
 
-Default: 1
+Default: `1`
 
 
 ### Other settings
@@ -147,8 +147,28 @@ If using options 3 or 4 for `ap4rc_username_format`, pad to this many digits
 e.g. 4 = "8 -> 0008". If you have lots of users / frequent password expiry, then 
 you may require more digits for format 3.
 
-Default: 4
+Default: `4`
 
+`ap4rc_strict_userid_lookup`
+
+
+Use strict user_id lookup?
+
+Default: `false`
+
+Roundcube's users table has separate columns for `username` and `mail_host`. `username` is not guaranteed to be unique in multi-host/domain setups.
+
+Setting this to `true` will lookup application_passwords only for the logged in `user_id`.
+
+Setting this to `false` will lookup application_passwords by `username`. 
+
+(Assume `username`: "john", `mail_host`: "localhost" is the same user as: `username`: "john" `mail_host`: "mail.example.com")
+
+New installs recommended to set this to `true`.
+
+If you changed roundcube's IMAP server name, or users can login to multiple IMAP servers, the users table will 
+contain multiple entries for each user. After changing roundcube's `imap_host`, update of `mail_host` 
+column in `users` table is required to match old user data records with the new host.
 
 ## Dovecot side of things
 

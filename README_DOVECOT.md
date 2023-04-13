@@ -13,9 +13,8 @@ There are several examples shipped with dovecot:
 
 `./conf.d/auth-sql.conf.ext` - Example authentication config using SQL query.
 
-`./dovecot-dict-sql.conf.ext` - Example dict config for SQL. 
+`./dovecot-dict-sql.conf.ext` - Example dict config for SQL. This is where the SQL query and other database config goes, and tells dovecot how to find the relevant fields from the table and return various values. (referenced from within the auth-* files above )
 
-This is where the SQL query (and other database config) goes, and tells dovecot how to find the relevant fields from the table and return various values. (referenced from within the auth-* files above )
 
 Authentication configs are usually included from `./conf.d/10-auth.conf`.
 
@@ -39,8 +38,8 @@ After changing the configuration, run `doveadm reload`
 **ALWAYS TEST** the configuration does what you expect!
 
 Dovecot's authentication config can get awkward when using multiple passdbs.
-It's possible to accidentally configure, for example, a passdb that allows ANY password!
-
+It's possible to accidentally configure, for example, a passdb that allows ANY password, or for dovecot to
+accept mail for non-existent users.
 
 ## Username formats
 
@@ -116,7 +115,7 @@ password_query = SELECT username,password \
 
 ```
 
-Or you can select with the mysql query:
+Or you can select using the mysql query:
 
 ```
 password_query = \
@@ -156,20 +155,9 @@ connect to ports 5993 for IMAP and 5465 for submission. These ports are NOT acce
 externally. (Unfortunately dovecot does not currently let us do: `deny_real_nets=` 
 or `allow_real_nets=!192.168.10.1`)
 
-### Roundcube config.inc.php:
-
-```php
-// IMAP host chosen to perform the log-in.
-// See defaults.inc.php for the option description.
-$config['imap_host'] = 'ssl://mailserver.example.com:5993';
-
-// SMTP server host (for sending mails).
-// See defaults.inc.php for the option description.
-$config['smtp_host'] = 'ssl://mailserver.example.com:5465';
-
-```
-
 ### Dovecot ports
+
+Add some secure ports for roundcube to use:
 
 `10-master.conf` example:
 
@@ -209,7 +197,6 @@ service submission-login {
 }
 
 ```
-
 NOTE: As per [RFC 8314](https://www.rfc-editor.org/rfc/rfc8314) (2018), it is now recommended to use implicit TLS, and
 as of [RFC 8997](https://www.rfc-editor.org/rfc/rfc8997) at least TLS v1.2.
 
@@ -245,6 +232,46 @@ use the most secure encryption method, and only use an up-to-date client which s
 (And not, for example, try to downgrade to older, weaker encryption or get a hard-to-understand SSL error if 
 the client tried to use deprecated SSLv3.)
 
+
+### Roundcube config.inc.php:
+
+Configure roundcube to use new ports.
+
+
+```php
+// IMAP host chosen to perform the log-in.
+// See defaults.inc.php for the option description.
+$config['imap_host'] = 'ssl://mailserver.example.com:5993';
+
+// SMTP server host (for sending mails).
+// See defaults.inc.php for the option description.
+$config['smtp_host'] = 'ssl://mailserver.example.com:5465';
+```
+
+- **NOTE FOR ROUNDCUBE VERSIONS BEFORE 1.6.x**: 
+  - Use `default_host` and `default_port` instead of `imap_host`.
+  - Use `smtp_server` and `smtp_port` instead of `smtp_host`.
+
+- **If using php earlier than ~7.2:**
+  - If "ssl://" connection fails, you may also need to set the following to force php to use TLS v1.2 and not use SSLv3 by default.
+  - Set `verify_peer` to false if you still have problems (e.g, the server name has changed, self-signed certs etc.)
+
+```php
+// See http://php.net/manual/en/context.ssl.php
+$config['imap_conn_options'] = array(
+  'ssl'         => array(
+     'verify_peer'  => false,
+     'protocol_version' => 'tlsv1.2',
+   ),
+);
+
+$config['smtp_conn_options'] = array(
+   'ssl'         => array(
+       'verify_peer'  => false,
+       'protocol_version' => 'tlsv1.2',
+   ),
+);
+```
 
 ### Auth Config Example
 
@@ -447,6 +474,71 @@ password_query = \
          AND created >= NOW() - INTERVAL 2 MONTH;
 ```
 
+## Preventing users from using roundcube password with IMAP
+
+Once you have verified the config is working correctly with both existing and application 
+specific passwords and have rolled out application specific passwords to any existing users, 
+you will want to restrict use of the original password to roundcube only. (You have 
+presumably enabled roundcube 2fa, so we want to make sure this password cannot be 
+used without 2fa.)
+
+It is recommended to change this password anyway for good measure.
+
+There are various methods to do this, depending on your existing dovecot authentication setup and username format.
+
+If your usernames are different (username formats 1, 3 or 4) you might be able to add a `username_filter` to each `passdb`.
+
+If your roundcube usernames do not contain "@", but the application specific passwords do:
+
+```
+passdb { 
+  # ... existing passdb for roundcube...
+  username_filter = !*@*
+}
+
+passdb { 
+  # ... passdb for application specific passwords...
+  username_filter = *@*
+}
+```
+
+If your roundcube usernames contain a domain:
+
+```
+passdb { 
+  # ... existing passdb for roundcube...
+  username_filter = *@example.com
+}
+
+passdb { 
+  # ... passdb for application specific passwords...
+  username_filter = !*@example.com *@*
+}
+```
+
+You may also want to look at disabling roundcube's `auto_create_user` option, to prevent "incorrect" accounts from 
+being able to access it. You will have to create roundcube users yourself by adding them to the `users` table, and
+maybe invent a tool to do that.
+
+If your usernames are the same, One method is shown in the example 2 above. For your EXISTING `passdb` config, add something like:
+
+`override_fields = allow_real_nets=192.168.10.1,2001:DB8:10:1a4::1`
+
+Where the IP addresses are your roundcube hosts. You can also add `local` temporarily to enable testing with `doveadm auth` / `doveadm user`:
+
+`override_fields = allow_real_nets=local,192.168.10.1,2001:DB8:10:1a4::1`
+
+This means the `passdb` section will only succeed (even if the password is correct) if the login is from the specified IPs.
+
+Next, we want to express the _opposite_ logic: Do not allow the application specific passwords to be used via roundcube.
+
+Unfortunately dovecot (at least 2.3.20) does not provide an easy way to do this, e.g. "`deny_real_nets`"  or "`allow_real_nets = !...`"
+
+If your 2fa plugin _always_ enforces the use of 2fa, you may not care about this case: roundcube will prompt for 2fa authentication
+regardless of which password is used.
+
+See the Auth config example for method 2 above.
+
 
 ## fail2ban etc...
 
@@ -467,8 +559,8 @@ thing: If the IP of the roundcube host is blocked, nobody will be able to access
 
 Roundcube has its own built-in brute-force rate limit: `login_rate_limit`. This rate limit only applies for failed login attempts for _existing_ users in its database.
 
-As of 1.6.1, Roundcube does not prevent someone trying lots of different/random usernames and passwords, but the login process
-seems sufficiently slow to make large-scale brute-force attacks fairly unfeasible. You may want to make it more difficult for
+Roundcube (at least 1.6.1) does not prevent someone trying lots of different/random usernames and passwords. The login process
+seems slow enough to make large-scale brute-force attacks fairly unfeasible. You may want to make it more difficult for
 potential attackers to exploit roundcube's differing failed login behaviour to determine if a user exists or not. (Or just
 to stop many failed login attempts from wasting resources and cluttering your logs.)
 
