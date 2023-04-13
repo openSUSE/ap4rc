@@ -151,9 +151,9 @@ We also do not want users logging in to roundcube using an application-specific 
 (Some 2fa plugins can enforce 2fa. Others do not.)
 
 To make it easy to determine if a login is from roundcube, roundcube is configured to
-connect to ports 5993 for IMAP and 5465 for submission. These ports are NOT accessible
-externally. (Unfortunately dovecot does not currently let us do: `deny_real_nets=` 
-or `allow_real_nets=!192.168.10.1`)
+connect to ports 5993 for IMAP and 5465 for submission. Make sure these ports are 
+NOT accessible externally (firewall etc.) (Unfortunately dovecot does not currently 
+let us do: `deny_real_nets=` or `allow_real_nets=!192.168.10.1`)
 
 ### Dovecot ports
 
