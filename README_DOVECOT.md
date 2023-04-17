@@ -116,7 +116,7 @@ default_pass_scheme = SHA512
 # ap4rc format 1
 password_query = SELECT username,password \
   FROM application_passwords \
-   WHERE username='%u' AND application='%d' \
+   WHERE username='%n' AND application='%d' \
    AND created >= NOW() - INTERVAL 2 MONTH;  
 
 ```
@@ -126,7 +126,7 @@ If your dovecot usernames are email addresses, Dovecot (as of v2.2.6) supports t
 ```
 password_query = SELECT username,password \
   FROM application_passwords \
-   WHERE username='%u@%{domain_first}' AND application='%{domain_last}' \
+   WHERE username='%n@%{domain_first}' AND application='%{domain_last}' \
    AND created >= NOW() - INTERVAL 2 MONTH;  
 
 ```
@@ -234,7 +234,7 @@ Today, when people refer to "SSL" they usually mean "TLS".
 Clients use these terms interchangeably e.g. "SSL" meaning "Connect to the port using implicit TLS",
 with "TLS" meaning "Connect to unencrypted port, use STARTTLS" 
 
-Other times, "SSL" means "force use of deprecated SSLv3, and "TLS" means "use TLS" (with/without STARTTLS ?)
+Other times, "SSL" means "force use of deprecated SSLv3", and "TLS" means "use TLS" (with/without STARTTLS ?)
 
 To remove this confusion, it is recommended to always just use implicit TLS: Then clients will ALWAYS 
 use encryption (or fail), instead of trying to use other unwanted/insecure methods.
@@ -336,9 +336,9 @@ userdb {
 
 ```
 
-It's also possible to use IP without using different ports, but it starts to look ugly if you have more than a few, or IPv6 and IPv4:
+It's also possible to use IP without using different ports, but it starts to look ugly if you have a few, or IPv6 and IPv4:
 ```
-# ap4rc format 2
+# ap4rc format 2 - single IP 2001:DB8:10:1a4::2
 passdb {
   driver = sql
   username_filter = *@example.com
@@ -347,6 +347,11 @@ passdb {
   override_fields = allow_real_nets=%{if;%{real_remote_ip};eq;2001\:DB8\:10\:1a4\:\:2;127.0.0.2;%{real_remote_ip}}
   skip = authenticated
 }
+```
+... To add more, you end up with this:
+
+```
+  override_fields = allow_real_nets=%{if;%{real_remote_ip};eq;2001\:DB8\:10\:1a4\:\:2;127.0.0.2;%{if;%{real_remote_ip};eq;192.168.206.64;127.0.0.2;%{real_remote_ip}}}
 ```
 
 
