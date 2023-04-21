@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS application_passwords;
+-- DROP TABLE IF EXISTS application_passwords;
 CREATE TABLE IF NOT EXISTS application_passwords (
   id          serial,
   application VARCHAR(128) NOT NULL,

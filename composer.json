@@ -24,12 +24,12 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "roundcube/plugin-installer": "~0.2.0"
+        "roundcube/plugin-installer": ">=0.2.0"
     },
     "extra": {
         "roundcube": {
-            "min-version": "1.0",
-            "sql-dir": "SQL"
+            "min-version": "1.2",
+            "sql-dir": "./SQL"
         }
     }
 }
